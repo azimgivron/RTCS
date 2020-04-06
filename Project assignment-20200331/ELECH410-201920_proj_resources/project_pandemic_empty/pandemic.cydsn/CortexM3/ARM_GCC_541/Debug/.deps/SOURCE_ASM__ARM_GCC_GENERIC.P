@@ -1,0 +1,10 @@
+C:/Users/IEUser/Downloads/Project\ assignment-20200331/ELECH410-201920_proj_resources/project_pandemic_empty/pandemic.cydsn/CortexM3/ARM_GCC_541/Debug/CyBootAsmGnu.o : C:/Users/IEUser/Downloads/Project\ assignment-20200331/ELECH410-201920_proj_resources/project_pandemic_empty/pandemic.cydsn/Generated_Source/PSoC5/CyBootAsmGnu.s C:/Users/IEUser/Downloads/Project\ assignment-20200331/ELECH410-201920_proj_resources/project_pandemic_empty/pandemic.cydsn/Generated_Source/PSoC5/cydevicegnu.inc C:/Users/IEUser/Downloads/Project\ assignment-20200331/ELECH410-201920_proj_resources/project_pandemic_empty/pandemic.cydsn/Generated_Source/PSoC5/cydevicegnu_trm.inc C:/Users/IEUser/Downloads/Project\ assignment-20200331/ELECH410-201920_proj_resources/project_pandemic_empty/pandemic.cydsn/Generated_Source/PSoC5/cyfittergnu.inc 
+
+C:/Users/IEUser/Downloads/Project\ assignment-20200331/ELECH410-201920_proj_resources/project_pandemic_empty/pandemic.cydsn/Generated_Source/PSoC5/CyBootAsmGnu.s : 
+
+C:/Users/IEUser/Downloads/Project\ assignment-20200331/ELECH410-201920_proj_resources/project_pandemic_empty/pandemic.cydsn/Generated_Source/PSoC5/cydevicegnu.inc : 
+
+C:/Users/IEUser/Downloads/Project\ assignment-20200331/ELECH410-201920_proj_resources/project_pandemic_empty/pandemic.cydsn/Generated_Source/PSoC5/cydevicegnu_trm.inc : 
+
+C:/Users/IEUser/Downloads/Project\ assignment-20200331/ELECH410-201920_proj_resources/project_pandemic_empty/pandemic.cydsn/Generated_Source/PSoC5/cyfittergnu.inc : 
+

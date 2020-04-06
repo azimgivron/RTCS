@@ -1,0 +1,2540 @@
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"main.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.freeRTOSInit,"ax",%progbits
+  20              		.align	2
+  21              		.thumb
+  22              		.thumb_func
+  23              		.type	freeRTOSInit, %function
+  24              	freeRTOSInit:
+  25              	.LFB69:
+  26              		.file 1 "main.c"
+   1:main.c        **** /* ========================================
+   2:main.c        ****  *
+   3:main.c        ****  *              ELECH410 labs
+   4:main.c        ****  *          FreeRTOS pandemic project
+   5:main.c        ****  * 
+   6:main.c        ****  *                   2020
+   7:main.c        ****  *
+   8:main.c        ****  * ========================================
+   9:main.c        **** */
+  10:main.c        **** #include "project.h"
+  11:main.c        **** 
+  12:main.c        **** /* RTOS includes. */
+  13:main.c        **** #include "FreeRTOS.h"
+  14:main.c        **** #include "task.h"
+  15:main.c        **** #include "timers.h"
+  16:main.c        **** #include "queue.h"
+  17:main.c        **** #include "semphr.h"
+  18:main.c        **** 
+  19:main.c        **** #include "pandemic.h"
+  20:main.c        **** 
+  21:main.c        **** #define TASK_STACK_SIZE (1024)
+  22:main.c        **** 
+  23:main.c        **** /* Task definitions */
+  24:main.c        **** #define GAME_TASK_NAME ("game_task")
+  25:main.c        **** #define QUARANTINE_TASK_NAME ("quarantine_task")
+  26:main.c        **** #define VACCINE_TASK_NAME ("vaccine_task")
+  27:main.c        **** #define SCREEN_UPDATE_TASK_NAME ("screen_update_task")
+  28:main.c        **** #define MEDICINE_TASK_NAME ("medicine_task")
+  29:main.c        **** 
+  30:main.c        **** #define GAME_PRIORITY (20)
+  31:main.c        **** #define QUARANTINE_PRIORITY (3)
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 2
+
+
+  32:main.c        **** #define VACCINE_PRIORITY (2)
+  33:main.c        **** #define SCREEN_UPDATE_PRIORITY (1)
+  34:main.c        **** #define MEDICINE_PRIORITY (0)
+  35:main.c        **** 
+  36:main.c        **** 
+  37:main.c        **** /* Semaphore */
+  38:main.c        **** SemaphoreHandle_t s1, s2;
+  39:main.c        **** QueueHandle_t q;
+  40:main.c        **** 
+  41:main.c        **** /* Task handlers */
+  42:main.c        **** TaskHandle_t gameHandler, quarantineHandler, vaccineHandler,
+  43:main.c        **** screenUpdateHandler, medicineHandler;
+  44:main.c        **** 
+  45:main.c        **** /*
+  46:main.c        ****  * Installs the RTOS interrupt handlers.
+  47:main.c        ****  */
+  48:main.c        **** static void freeRTOSInit( void );
+  49:main.c        **** 
+  50:main.c        **** /* functions declarations */
+  51:main.c        **** void quarantineTask();
+  52:main.c        **** void vaccineTask();
+  53:main.c        **** void screenUpdateTask();
+  54:main.c        **** void medicineTask();
+  55:main.c        **** 
+  56:main.c        **** int main(void)
+  57:main.c        **** {
+  58:main.c        ****     /* Enable global interrupts. */
+  59:main.c        ****     CyGlobalIntEnable; 
+  60:main.c        ****     
+  61:main.c        ****     freeRTOSInit();
+  62:main.c        ****     
+  63:main.c        ****     /* Place your initialization/startup code here (e.g. MyInst_Start()) */
+  64:main.c        ****     LCD_Start();
+  65:main.c        ****     KB_Start();
+  66:main.c        ****     
+  67:main.c        ****     // Create tasks
+  68:main.c        ****     xTaskCreate( gameTask, GAME_TASK_NAME, TASK_STACK_SIZE, NULL, GAME_PRIORITY, &gameHandler );
+  69:main.c        ****     xTaskCreate( quarantineTask,QUARANTINE_TASK_NAME, TASK_STACK_SIZE, NULL, QUARANTINE_PRIORITY, &
+  70:main.c        ****     xTaskCreate( vaccineTask, VACCINE_TASK_NAME, TASK_STACK_SIZE, NULL, VACCINE_PRIORITY, &vaccineH
+  71:main.c        ****     xTaskCreate( screenUpdateTask, SCREEN_UPDATE_TASK_NAME, TASK_STACK_SIZE, NULL, SCREEN_UPDATE_PR
+  72:main.c        ****     xTaskCreate( medicineTask, MEDICINE_TASK_NAME, TASK_STACK_SIZE, NULL, MEDICINE_PRIORITY, &medic
+  73:main.c        ****     
+  74:main.c        ****     s1 = xSemaphoreCreateBinary();
+  75:main.c        ****     s2 = xSemaphoreCreateMutex();
+  76:main.c        ****     q = xQueueCreate(1, sizeof(Token));
+  77:main.c        ****     
+  78:main.c        ****     // Launch freeRTOS
+  79:main.c        ****     vTaskStartScheduler();
+  80:main.c        ****     
+  81:main.c        ****     for(;;)
+  82:main.c        ****     {
+  83:main.c        ****     }
+  84:main.c        **** }
+  85:main.c        **** 
+  86:main.c        **** void freeRTOSInit( void )
+  87:main.c        **** {
+  27              		.loc 1 87 0
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 3
+
+
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 0
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              		@ link register save eliminated.
+  88:main.c        ****     /* Port layer functions that need to be copied into the vector table. */
+  89:main.c        ****     extern void xPortPendSVHandler( void );
+  90:main.c        ****     extern void xPortSysTickHandler( void );
+  91:main.c        ****     extern void vPortSVCHandler( void );
+  92:main.c        ****     extern cyisraddress CyRamVectors[];
+  93:main.c        **** 
+  94:main.c        **** 	/* Install the OS Interrupt Handlers. */
+  95:main.c        **** 	CyRamVectors[ 11 ] = ( cyisraddress ) vPortSVCHandler;
+  32              		.loc 1 95 0
+  33 0000 034B     		ldr	r3, .L2
+  34 0002 044A     		ldr	r2, .L2+4
+  35 0004 DA62     		str	r2, [r3, #44]
+  96:main.c        **** 	CyRamVectors[ 14 ] = ( cyisraddress ) xPortPendSVHandler;
+  36              		.loc 1 96 0
+  37 0006 044A     		ldr	r2, .L2+8
+  38 0008 9A63     		str	r2, [r3, #56]
+  97:main.c        **** 	CyRamVectors[ 15 ] = ( cyisraddress ) xPortSysTickHandler;
+  39              		.loc 1 97 0
+  40 000a 044A     		ldr	r2, .L2+12
+  41 000c DA63     		str	r2, [r3, #60]
+  42 000e 7047     		bx	lr
+  43              	.L3:
+  44              		.align	2
+  45              	.L2:
+  46 0010 00000000 		.word	CyRamVectors
+  47 0014 00000000 		.word	vPortSVCHandler
+  48 0018 00000000 		.word	xPortPendSVHandler
+  49 001c 00000000 		.word	xPortSysTickHandler
+  50              		.cfi_endproc
+  51              	.LFE69:
+  52              		.size	freeRTOSInit, .-freeRTOSInit
+  53              		.section	.text.quarantineTask,"ax",%progbits
+  54              		.align	2
+  55              		.global	quarantineTask
+  56              		.thumb
+  57              		.thumb_func
+  58              		.type	quarantineTask, %function
+  59              	quarantineTask:
+  60              	.LFB72:
+  98:main.c        **** }
+  99:main.c        **** 
+ 100:main.c        **** /*
+ 101:main.c        ****  * When a contamination occurs gameTask calls this function.
+ 102:main.c        ****  * 
+ 103:main.c        ****  */
+ 104:main.c        **** void releaseContamination( void ){
+ 105:main.c        ****     xSemaphoreGive(s1);
+ 106:main.c        **** }
+ 107:main.c        **** 
+ 108:main.c        **** /*
+ 109:main.c        ****  * When gameTask releases a vaccine clue it calls this function.
+ 110:main.c        ****  * 
+ 111:main.c        ****  */
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 4
+
+
+ 112:main.c        **** void releaseClue( Token clue ){
+ 113:main.c        ****     xQueueSendToBack(q, (void*)&clue, portMAX_DELAY);
+ 114:main.c        **** }
+ 115:main.c        **** 
+ 116:main.c        **** /*
+ 117:main.c        ****  * 
+ 118:main.c        ****  * 
+ 119:main.c        ****  */
+ 120:main.c        **** void quarantineTask(){
+  61              		.loc 1 120 0
+  62              		.cfi_startproc
+  63              		@ Volatile: function does not return.
+  64              		@ args = 0, pretend = 0, frame = 0
+  65              		@ frame_needed = 0, uses_anonymous_args = 0
+  66 0000 08B5     		push	{r3, lr}
+  67              		.cfi_def_cfa_offset 8
+  68              		.cfi_offset 3, -8
+  69              		.cfi_offset 14, -4
+  70              	.L5:
+ 121:main.c        ****     for(;;)
+ 122:main.c        ****     {
+ 123:main.c        ****         xSemaphoreTake(s1, portMAX_DELAY);
+  71              		.loc 1 123 0 discriminator 1
+  72 0002 4FF0FF31 		mov	r1, #-1
+  73 0006 034B     		ldr	r3, .L7
+  74 0008 1868     		ldr	r0, [r3]
+  75 000a FFF7FEFF 		bl	xQueueSemaphoreTake
+  76              	.LVL0:
+ 124:main.c        ****         quarantine();
+  77              		.loc 1 124 0 discriminator 1
+  78 000e FFF7FEFF 		bl	quarantine
+  79              	.LVL1:
+  80 0012 F6E7     		b	.L5
+  81              	.L8:
+  82              		.align	2
+  83              	.L7:
+  84 0014 00000000 		.word	s1
+  85              		.cfi_endproc
+  86              	.LFE72:
+  87              		.size	quarantineTask, .-quarantineTask
+  88              		.section	.text.vaccineTask,"ax",%progbits
+  89              		.align	2
+  90              		.global	vaccineTask
+  91              		.thumb
+  92              		.thumb_func
+  93              		.type	vaccineTask, %function
+  94              	vaccineTask:
+  95              	.LFB73:
+ 125:main.c        ****     }
+ 126:main.c        **** }
+ 127:main.c        **** 
+ 128:main.c        **** /*
+ 129:main.c        ****  * 
+ 130:main.c        ****  * 
+ 131:main.c        ****  */
+ 132:main.c        **** void vaccineTask(){
+  96              		.loc 1 132 0
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 5
+
+
+  97              		.cfi_startproc
+  98              		@ args = 0, pretend = 0, frame = 8
+  99              		@ frame_needed = 0, uses_anonymous_args = 0
+ 100 0000 10B5     		push	{r4, lr}
+ 101              		.cfi_def_cfa_offset 8
+ 102              		.cfi_offset 4, -8
+ 103              		.cfi_offset 14, -4
+ 104 0002 82B0     		sub	sp, sp, #8
+ 105              		.cfi_def_cfa_offset 16
+ 106              	.L10:
+ 133:main.c        ****     Token vaccine, clue;
+ 134:main.c        ****     for(;;)
+ 135:main.c        ****     {
+ 136:main.c        ****         xQueueReceive(q, (void*)&clue, portMAX_DELAY);
+ 107              		.loc 1 136 0 discriminator 1
+ 108 0004 4FF0FF32 		mov	r2, #-1
+ 109 0008 0DF10701 		add	r1, sp, #7
+ 110 000c 0B4B     		ldr	r3, .L12
+ 111 000e 1868     		ldr	r0, [r3]
+ 112 0010 FFF7FEFF 		bl	xQueueReceive
+ 113              	.LVL2:
+ 137:main.c        ****         
+ 138:main.c        ****         xSemaphoreTake(s2, portMAX_DELAY);
+ 114              		.loc 1 138 0 discriminator 1
+ 115 0014 0A4C     		ldr	r4, .L12+4
+ 116 0016 4FF0FF31 		mov	r1, #-1
+ 117 001a 2068     		ldr	r0, [r4]
+ 118 001c FFF7FEFF 		bl	xQueueSemaphoreTake
+ 119              	.LVL3:
+ 139:main.c        ****         vaccine = assignMissionToLab(clue);
+ 120              		.loc 1 139 0 discriminator 1
+ 121 0020 9DF80700 		ldrb	r0, [sp, #7]	@ zero_extendqisi2
+ 122 0024 FFF7FEFF 		bl	assignMissionToLab
+ 123              	.LVL4:
+ 140:main.c        ****         shipVaccine(vaccine); 
+ 124              		.loc 1 140 0 discriminator 1
+ 125 0028 FFF7FEFF 		bl	shipVaccine
+ 126              	.LVL5:
+ 141:main.c        ****         xSemaphoreGive(s2);
+ 127              		.loc 1 141 0 discriminator 1
+ 128 002c 0023     		movs	r3, #0
+ 129 002e 1A46     		mov	r2, r3
+ 130 0030 1946     		mov	r1, r3
+ 131 0032 2068     		ldr	r0, [r4]
+ 132 0034 FFF7FEFF 		bl	xQueueGenericSend
+ 133              	.LVL6:
+ 134 0038 E4E7     		b	.L10
+ 135              	.L13:
+ 136 003a 00BF     		.align	2
+ 137              	.L12:
+ 138 003c 00000000 		.word	q
+ 139 0040 00000000 		.word	s2
+ 140              		.cfi_endproc
+ 141              	.LFE73:
+ 142              		.size	vaccineTask, .-vaccineTask
+ 143              		.section	.text.medicineTask,"ax",%progbits
+ 144              		.align	2
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 6
+
+
+ 145              		.global	medicineTask
+ 146              		.thumb
+ 147              		.thumb_func
+ 148              		.type	medicineTask, %function
+ 149              	medicineTask:
+ 150              	.LFB75:
+ 142:main.c        ****     }
+ 143:main.c        **** }
+ 144:main.c        **** 
+ 145:main.c        **** /*
+ 146:main.c        ****  * 
+ 147:main.c        ****  * 
+ 148:main.c        ****  */
+ 149:main.c        **** void screenUpdateTask(){
+ 150:main.c        ****     for(;;)
+ 151:main.c        ****     {
+ 152:main.c        ****         LCD_Position(0u, 0u);
+ 153:main.c        ****         //LCD_PutChar(getPopulationCntr());
+ 154:main.c        ****         vTaskDelay(200u);
+ 155:main.c        ****     }
+ 156:main.c        **** }
+ 157:main.c        **** 
+ 158:main.c        **** /*
+ 159:main.c        ****  * 
+ 160:main.c        ****  * 
+ 161:main.c        ****  */
+ 162:main.c        **** void medicineTask(){
+ 151              		.loc 1 162 0
+ 152              		.cfi_startproc
+ 153              		@ args = 0, pretend = 0, frame = 0
+ 154              		@ frame_needed = 0, uses_anonymous_args = 0
+ 155 0000 10B5     		push	{r4, lr}
+ 156              		.cfi_def_cfa_offset 8
+ 157              		.cfi_offset 4, -8
+ 158              		.cfi_offset 14, -4
+ 159              	.L15:
+ 163:main.c        ****     Token medicine;
+ 164:main.c        ****     for(;;)
+ 165:main.c        ****     {
+ 166:main.c        ****         xSemaphoreTake(s2, portMAX_DELAY);
+ 160              		.loc 1 166 0 discriminator 1
+ 161 0002 094C     		ldr	r4, .L17
+ 162 0004 4FF0FF31 		mov	r1, #-1
+ 163 0008 2068     		ldr	r0, [r4]
+ 164 000a FFF7FEFF 		bl	xQueueSemaphoreTake
+ 165              	.LVL7:
+ 167:main.c        ****         medicine = assignMissionToLab(0);
+ 166              		.loc 1 167 0 discriminator 1
+ 167 000e 0020     		movs	r0, #0
+ 168 0010 FFF7FEFF 		bl	assignMissionToLab
+ 169              	.LVL8:
+ 168:main.c        ****         shipVaccine(medicine); 
+ 170              		.loc 1 168 0 discriminator 1
+ 171 0014 FFF7FEFF 		bl	shipVaccine
+ 172              	.LVL9:
+ 169:main.c        ****         xSemaphoreGive(s2);
+ 173              		.loc 1 169 0 discriminator 1
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 7
+
+
+ 174 0018 0023     		movs	r3, #0
+ 175 001a 1A46     		mov	r2, r3
+ 176 001c 1946     		mov	r1, r3
+ 177 001e 2068     		ldr	r0, [r4]
+ 178 0020 FFF7FEFF 		bl	xQueueGenericSend
+ 179              	.LVL10:
+ 180 0024 EDE7     		b	.L15
+ 181              	.L18:
+ 182 0026 00BF     		.align	2
+ 183              	.L17:
+ 184 0028 00000000 		.word	s2
+ 185              		.cfi_endproc
+ 186              	.LFE75:
+ 187              		.size	medicineTask, .-medicineTask
+ 188              		.section	.text.screenUpdateTask,"ax",%progbits
+ 189              		.align	2
+ 190              		.global	screenUpdateTask
+ 191              		.thumb
+ 192              		.thumb_func
+ 193              		.type	screenUpdateTask, %function
+ 194              	screenUpdateTask:
+ 195              	.LFB74:
+ 149:main.c        ****     for(;;)
+ 196              		.loc 1 149 0
+ 197              		.cfi_startproc
+ 198              		@ Volatile: function does not return.
+ 199              		@ args = 0, pretend = 0, frame = 0
+ 200              		@ frame_needed = 0, uses_anonymous_args = 0
+ 201 0000 08B5     		push	{r3, lr}
+ 202              		.cfi_def_cfa_offset 8
+ 203              		.cfi_offset 3, -8
+ 204              		.cfi_offset 14, -4
+ 205              	.L20:
+ 152:main.c        ****         //LCD_PutChar(getPopulationCntr());
+ 206              		.loc 1 152 0 discriminator 1
+ 207 0002 0021     		movs	r1, #0
+ 208 0004 0846     		mov	r0, r1
+ 209 0006 FFF7FEFF 		bl	LCD_Position
+ 210              	.LVL11:
+ 154:main.c        ****     }
+ 211              		.loc 1 154 0 discriminator 1
+ 212 000a C820     		movs	r0, #200
+ 213 000c FFF7FEFF 		bl	vTaskDelay
+ 214              	.LVL12:
+ 215 0010 F7E7     		b	.L20
+ 216              		.cfi_endproc
+ 217              	.LFE74:
+ 218              		.size	screenUpdateTask, .-screenUpdateTask
+ 219 0012 00BF     		.section	.text.main,"ax",%progbits
+ 220              		.align	2
+ 221              		.global	main
+ 222              		.thumb
+ 223              		.thumb_func
+ 224              		.type	main, %function
+ 225              	main:
+ 226              	.LFB68:
+  57:main.c        ****     /* Enable global interrupts. */
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 8
+
+
+ 227              		.loc 1 57 0
+ 228              		.cfi_startproc
+ 229              		@ Volatile: function does not return.
+ 230              		@ args = 0, pretend = 0, frame = 0
+ 231              		@ frame_needed = 0, uses_anonymous_args = 0
+ 232 0000 00B5     		push	{lr}
+ 233              		.cfi_def_cfa_offset 4
+ 234              		.cfi_offset 14, -4
+ 235 0002 83B0     		sub	sp, sp, #12
+ 236              		.cfi_def_cfa_offset 16
+  59:main.c        ****     
+ 237              		.loc 1 59 0
+ 238              		.syntax unified
+ 239              	@ 59 "main.c" 1
+ 240 0004 62B6     		CPSIE   i
+ 241              	@ 0 "" 2
+  61:main.c        ****     
+ 242              		.loc 1 61 0
+ 243              		.thumb
+ 244              		.syntax unified
+ 245 0006 FFF7FEFF 		bl	freeRTOSInit
+ 246              	.LVL13:
+  64:main.c        ****     KB_Start();
+ 247              		.loc 1 64 0
+ 248 000a FFF7FEFF 		bl	LCD_Start
+ 249              	.LVL14:
+  65:main.c        ****     
+ 250              		.loc 1 65 0
+ 251 000e FFF7FEFF 		bl	KB_Start
+ 252              	.LVL15:
+  68:main.c        ****     xTaskCreate( quarantineTask,QUARANTINE_TASK_NAME, TASK_STACK_SIZE, NULL, QUARANTINE_PRIORITY, &
+ 253              		.loc 1 68 0
+ 254 0012 264B     		ldr	r3, .L25
+ 255 0014 0193     		str	r3, [sp, #4]
+ 256 0016 1423     		movs	r3, #20
+ 257 0018 0093     		str	r3, [sp]
+ 258 001a 0023     		movs	r3, #0
+ 259 001c 4FF48062 		mov	r2, #1024
+ 260 0020 2349     		ldr	r1, .L25+4
+ 261 0022 2448     		ldr	r0, .L25+8
+ 262 0024 FFF7FEFF 		bl	xTaskCreate
+ 263              	.LVL16:
+  69:main.c        ****     xTaskCreate( vaccineTask, VACCINE_TASK_NAME, TASK_STACK_SIZE, NULL, VACCINE_PRIORITY, &vaccineH
+ 264              		.loc 1 69 0
+ 265 0028 234B     		ldr	r3, .L25+12
+ 266 002a 0193     		str	r3, [sp, #4]
+ 267 002c 0326     		movs	r6, #3
+ 268 002e 0096     		str	r6, [sp]
+ 269 0030 0023     		movs	r3, #0
+ 270 0032 4FF48062 		mov	r2, #1024
+ 271 0036 2149     		ldr	r1, .L25+16
+ 272 0038 2148     		ldr	r0, .L25+20
+ 273 003a FFF7FEFF 		bl	xTaskCreate
+ 274              	.LVL17:
+  70:main.c        ****     xTaskCreate( screenUpdateTask, SCREEN_UPDATE_TASK_NAME, TASK_STACK_SIZE, NULL, SCREEN_UPDATE_PR
+ 275              		.loc 1 70 0
+ 276 003e 214B     		ldr	r3, .L25+24
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 9
+
+
+ 277 0040 0193     		str	r3, [sp, #4]
+ 278 0042 0223     		movs	r3, #2
+ 279 0044 0093     		str	r3, [sp]
+ 280 0046 0023     		movs	r3, #0
+ 281 0048 4FF48062 		mov	r2, #1024
+ 282 004c 1E49     		ldr	r1, .L25+28
+ 283 004e 1F48     		ldr	r0, .L25+32
+ 284 0050 FFF7FEFF 		bl	xTaskCreate
+ 285              	.LVL18:
+  71:main.c        ****     xTaskCreate( medicineTask, MEDICINE_TASK_NAME, TASK_STACK_SIZE, NULL, MEDICINE_PRIORITY, &medic
+ 286              		.loc 1 71 0
+ 287 0054 1E4B     		ldr	r3, .L25+36
+ 288 0056 0193     		str	r3, [sp, #4]
+ 289 0058 0124     		movs	r4, #1
+ 290 005a 0094     		str	r4, [sp]
+ 291 005c 0023     		movs	r3, #0
+ 292 005e 4FF48062 		mov	r2, #1024
+ 293 0062 1C49     		ldr	r1, .L25+40
+ 294 0064 1C48     		ldr	r0, .L25+44
+ 295 0066 FFF7FEFF 		bl	xTaskCreate
+ 296              	.LVL19:
+  72:main.c        ****     
+ 297              		.loc 1 72 0
+ 298 006a 1C4B     		ldr	r3, .L25+48
+ 299 006c 0193     		str	r3, [sp, #4]
+ 300 006e 0025     		movs	r5, #0
+ 301 0070 0095     		str	r5, [sp]
+ 302 0072 2B46     		mov	r3, r5
+ 303 0074 4FF48062 		mov	r2, #1024
+ 304 0078 1949     		ldr	r1, .L25+52
+ 305 007a 1A48     		ldr	r0, .L25+56
+ 306 007c FFF7FEFF 		bl	xTaskCreate
+ 307              	.LVL20:
+  74:main.c        ****     s2 = xSemaphoreCreateMutex();
+ 308              		.loc 1 74 0
+ 309 0080 3246     		mov	r2, r6
+ 310 0082 2946     		mov	r1, r5
+ 311 0084 2046     		mov	r0, r4
+ 312 0086 FFF7FEFF 		bl	xQueueGenericCreate
+ 313              	.LVL21:
+ 314 008a 174B     		ldr	r3, .L25+60
+ 315 008c 1860     		str	r0, [r3]
+  75:main.c        ****     q = xQueueCreate(1, sizeof(Token));
+ 316              		.loc 1 75 0
+ 317 008e 2046     		mov	r0, r4
+ 318 0090 FFF7FEFF 		bl	xQueueCreateMutex
+ 319              	.LVL22:
+ 320 0094 154B     		ldr	r3, .L25+64
+ 321 0096 1860     		str	r0, [r3]
+  76:main.c        ****     
+ 322              		.loc 1 76 0
+ 323 0098 2A46     		mov	r2, r5
+ 324 009a 2146     		mov	r1, r4
+ 325 009c 2046     		mov	r0, r4
+ 326 009e FFF7FEFF 		bl	xQueueGenericCreate
+ 327              	.LVL23:
+ 328 00a2 134B     		ldr	r3, .L25+68
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 10
+
+
+ 329 00a4 1860     		str	r0, [r3]
+  79:main.c        ****     
+ 330              		.loc 1 79 0
+ 331 00a6 FFF7FEFF 		bl	vTaskStartScheduler
+ 332              	.LVL24:
+ 333              	.L23:
+ 334 00aa FEE7     		b	.L23
+ 335              	.L26:
+ 336              		.align	2
+ 337              	.L25:
+ 338 00ac 00000000 		.word	gameHandler
+ 339 00b0 00000000 		.word	.LC0
+ 340 00b4 00000000 		.word	gameTask
+ 341 00b8 00000000 		.word	quarantineHandler
+ 342 00bc 0C000000 		.word	.LC1
+ 343 00c0 00000000 		.word	quarantineTask
+ 344 00c4 00000000 		.word	vaccineHandler
+ 345 00c8 1C000000 		.word	.LC2
+ 346 00cc 00000000 		.word	vaccineTask
+ 347 00d0 00000000 		.word	screenUpdateHandler
+ 348 00d4 2C000000 		.word	.LC3
+ 349 00d8 00000000 		.word	screenUpdateTask
+ 350 00dc 00000000 		.word	medicineHandler
+ 351 00e0 40000000 		.word	.LC4
+ 352 00e4 00000000 		.word	medicineTask
+ 353 00e8 00000000 		.word	s1
+ 354 00ec 00000000 		.word	s2
+ 355 00f0 00000000 		.word	q
+ 356              		.cfi_endproc
+ 357              	.LFE68:
+ 358              		.size	main, .-main
+ 359              		.section	.text.releaseContamination,"ax",%progbits
+ 360              		.align	2
+ 361              		.global	releaseContamination
+ 362              		.thumb
+ 363              		.thumb_func
+ 364              		.type	releaseContamination, %function
+ 365              	releaseContamination:
+ 366              	.LFB70:
+ 104:main.c        ****     xSemaphoreGive(s1);
+ 367              		.loc 1 104 0
+ 368              		.cfi_startproc
+ 369              		@ args = 0, pretend = 0, frame = 0
+ 370              		@ frame_needed = 0, uses_anonymous_args = 0
+ 371 0000 08B5     		push	{r3, lr}
+ 372              		.cfi_def_cfa_offset 8
+ 373              		.cfi_offset 3, -8
+ 374              		.cfi_offset 14, -4
+ 105:main.c        **** }
+ 375              		.loc 1 105 0
+ 376 0002 0023     		movs	r3, #0
+ 377 0004 1A46     		mov	r2, r3
+ 378 0006 1946     		mov	r1, r3
+ 379 0008 0248     		ldr	r0, .L29
+ 380 000a 0068     		ldr	r0, [r0]
+ 381 000c FFF7FEFF 		bl	xQueueGenericSend
+ 382              	.LVL25:
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 11
+
+
+ 383 0010 08BD     		pop	{r3, pc}
+ 384              	.L30:
+ 385 0012 00BF     		.align	2
+ 386              	.L29:
+ 387 0014 00000000 		.word	s1
+ 388              		.cfi_endproc
+ 389              	.LFE70:
+ 390              		.size	releaseContamination, .-releaseContamination
+ 391              		.section	.text.releaseClue,"ax",%progbits
+ 392              		.align	2
+ 393              		.global	releaseClue
+ 394              		.thumb
+ 395              		.thumb_func
+ 396              		.type	releaseClue, %function
+ 397              	releaseClue:
+ 398              	.LFB71:
+ 112:main.c        ****     xQueueSendToBack(q, (void*)&clue, portMAX_DELAY);
+ 399              		.loc 1 112 0
+ 400              		.cfi_startproc
+ 401              		@ args = 0, pretend = 0, frame = 8
+ 402              		@ frame_needed = 0, uses_anonymous_args = 0
+ 403              	.LVL26:
+ 404 0000 00B5     		push	{lr}
+ 405              		.cfi_def_cfa_offset 4
+ 406              		.cfi_offset 14, -4
+ 407 0002 83B0     		sub	sp, sp, #12
+ 408              		.cfi_def_cfa_offset 16
+ 409 0004 02A9     		add	r1, sp, #8
+ 410 0006 01F8010D 		strb	r0, [r1, #-1]!
+ 113:main.c        **** }
+ 411              		.loc 1 113 0
+ 412 000a 0023     		movs	r3, #0
+ 413 000c 4FF0FF32 		mov	r2, #-1
+ 414 0010 0348     		ldr	r0, .L33
+ 415              	.LVL27:
+ 416 0012 0068     		ldr	r0, [r0]
+ 417 0014 FFF7FEFF 		bl	xQueueGenericSend
+ 418              	.LVL28:
+ 114:main.c        **** 
+ 419              		.loc 1 114 0
+ 420 0018 03B0     		add	sp, sp, #12
+ 421              		.cfi_def_cfa_offset 4
+ 422              		@ sp needed
+ 423 001a 5DF804FB 		ldr	pc, [sp], #4
+ 424              	.LVL29:
+ 425              	.L34:
+ 426 001e 00BF     		.align	2
+ 427              	.L33:
+ 428 0020 00000000 		.word	q
+ 429              		.cfi_endproc
+ 430              	.LFE71:
+ 431              		.size	releaseClue, .-releaseClue
+ 432              		.comm	medicineHandler,4,4
+ 433              		.comm	screenUpdateHandler,4,4
+ 434              		.comm	vaccineHandler,4,4
+ 435              		.comm	quarantineHandler,4,4
+ 436              		.comm	gameHandler,4,4
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 12
+
+
+ 437              		.comm	q,4,4
+ 438              		.comm	s2,4,4
+ 439              		.comm	s1,4,4
+ 440              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 441              		.align	2
+ 442              	.LC0:
+ 443 0000 67616D65 		.ascii	"game_task\000"
+ 443      5F746173 
+ 443      6B00
+ 444 000a 0000     		.space	2
+ 445              	.LC1:
+ 446 000c 71756172 		.ascii	"quarantine_task\000"
+ 446      616E7469 
+ 446      6E655F74 
+ 446      61736B00 
+ 447              	.LC2:
+ 448 001c 76616363 		.ascii	"vaccine_task\000"
+ 448      696E655F 
+ 448      7461736B 
+ 448      00
+ 449 0029 000000   		.space	3
+ 450              	.LC3:
+ 451 002c 73637265 		.ascii	"screen_update_task\000"
+ 451      656E5F75 
+ 451      70646174 
+ 451      655F7461 
+ 451      736B00
+ 452 003f 00       		.space	1
+ 453              	.LC4:
+ 454 0040 6D656469 		.ascii	"medicine_task\000"
+ 454      63696E65 
+ 454      5F746173 
+ 454      6B00
+ 455              		.text
+ 456              	.Letext0:
+ 457              		.file 2 "c:\\program files (x86)\\cypress\\psoc creator\\4.3\\psoc creator\\import\\gnu\\arm\\5.4.
+ 458              		.file 3 "c:\\program files (x86)\\cypress\\psoc creator\\4.3\\psoc creator\\import\\gnu\\arm\\5.4.
+ 459              		.file 4 "Generated_Source\\PSoC5/cytypes.h"
+ 460              		.file 5 ".\\FreeRTOS\\include/portmacro.h"
+ 461              		.file 6 ".\\FreeRTOS\\include/task.h"
+ 462              		.file 7 ".\\FreeRTOS\\include/queue.h"
+ 463              		.file 8 ".\\FreeRTOS\\include/semphr.h"
+ 464              		.file 9 "pandemic.h"
+ 465              		.file 10 "Generated_Source\\PSoC5/core_cm3.h"
+ 466              		.file 11 "Generated_Source\\PSoC5/LCD.h"
+ 467              		.file 12 "Generated_Source\\PSoC5/KB_keyboard.h"
+ 468              		.section	.debug_info,"",%progbits
+ 469              	.Ldebug_info0:
+ 470 0000 65060000 		.4byte	0x665
+ 471 0004 0400     		.2byte	0x4
+ 472 0006 00000000 		.4byte	.Ldebug_abbrev0
+ 473 000a 04       		.byte	0x4
+ 474 000b 01       		.uleb128 0x1
+ 475 000c B5030000 		.4byte	.LASF64
+ 476 0010 0C       		.byte	0xc
+ 477 0011 BF020000 		.4byte	.LASF65
+ 478 0015 2D030000 		.4byte	.LASF66
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 13
+
+
+ 479 0019 00000000 		.4byte	.Ldebug_ranges0+0
+ 480 001d 00000000 		.4byte	0
+ 481 0021 00000000 		.4byte	.Ldebug_line0
+ 482 0025 02       		.uleb128 0x2
+ 483 0026 01       		.byte	0x1
+ 484 0027 06       		.byte	0x6
+ 485 0028 D3010000 		.4byte	.LASF0
+ 486 002c 03       		.uleb128 0x3
+ 487 002d 59040000 		.4byte	.LASF4
+ 488 0031 02       		.byte	0x2
+ 489 0032 1D       		.byte	0x1d
+ 490 0033 37000000 		.4byte	0x37
+ 491 0037 02       		.uleb128 0x2
+ 492 0038 01       		.byte	0x1
+ 493 0039 08       		.byte	0x8
+ 494 003a 74010000 		.4byte	.LASF1
+ 495 003e 02       		.uleb128 0x2
+ 496 003f 02       		.byte	0x2
+ 497 0040 05       		.byte	0x5
+ 498 0041 59000000 		.4byte	.LASF2
+ 499 0045 02       		.uleb128 0x2
+ 500 0046 02       		.byte	0x2
+ 501 0047 07       		.byte	0x7
+ 502 0048 74020000 		.4byte	.LASF3
+ 503 004c 03       		.uleb128 0x3
+ 504 004d E4020000 		.4byte	.LASF5
+ 505 0051 02       		.byte	0x2
+ 506 0052 3F       		.byte	0x3f
+ 507 0053 57000000 		.4byte	0x57
+ 508 0057 02       		.uleb128 0x2
+ 509 0058 04       		.byte	0x4
+ 510 0059 05       		.byte	0x5
+ 511 005a 2A010000 		.4byte	.LASF6
+ 512 005e 03       		.uleb128 0x3
+ 513 005f 90000000 		.4byte	.LASF7
+ 514 0063 02       		.byte	0x2
+ 515 0064 41       		.byte	0x41
+ 516 0065 69000000 		.4byte	0x69
+ 517 0069 02       		.uleb128 0x2
+ 518 006a 04       		.byte	0x4
+ 519 006b 07       		.byte	0x7
+ 520 006c C6020000 		.4byte	.LASF8
+ 521 0070 02       		.uleb128 0x2
+ 522 0071 08       		.byte	0x8
+ 523 0072 05       		.byte	0x5
+ 524 0073 E0000000 		.4byte	.LASF9
+ 525 0077 02       		.uleb128 0x2
+ 526 0078 08       		.byte	0x8
+ 527 0079 07       		.byte	0x7
+ 528 007a DF010000 		.4byte	.LASF10
+ 529 007e 04       		.uleb128 0x4
+ 530 007f 04       		.byte	0x4
+ 531 0080 05       		.byte	0x5
+ 532 0081 696E7400 		.ascii	"int\000"
+ 533 0085 02       		.uleb128 0x2
+ 534 0086 04       		.byte	0x4
+ 535 0087 07       		.byte	0x7
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 14
+
+
+ 536 0088 0C020000 		.4byte	.LASF11
+ 537 008c 03       		.uleb128 0x3
+ 538 008d AB000000 		.4byte	.LASF12
+ 539 0091 03       		.byte	0x3
+ 540 0092 18       		.byte	0x18
+ 541 0093 2C000000 		.4byte	0x2c
+ 542 0097 03       		.uleb128 0x3
+ 543 0098 8C020000 		.4byte	.LASF13
+ 544 009c 03       		.byte	0x3
+ 545 009d 2C       		.byte	0x2c
+ 546 009e 4C000000 		.4byte	0x4c
+ 547 00a2 03       		.uleb128 0x3
+ 548 00a3 F6010000 		.4byte	.LASF14
+ 549 00a7 03       		.byte	0x3
+ 550 00a8 30       		.byte	0x30
+ 551 00a9 5E000000 		.4byte	0x5e
+ 552 00ad 05       		.uleb128 0x5
+ 553 00ae C2000000 		.4byte	.LASF15
+ 554 00b2 04       		.byte	0x4
+ 555 00b3 E401     		.2byte	0x1e4
+ 556 00b5 37000000 		.4byte	0x37
+ 557 00b9 02       		.uleb128 0x2
+ 558 00ba 04       		.byte	0x4
+ 559 00bb 04       		.byte	0x4
+ 560 00bc DA000000 		.4byte	.LASF16
+ 561 00c0 02       		.uleb128 0x2
+ 562 00c1 08       		.byte	0x8
+ 563 00c2 04       		.byte	0x4
+ 564 00c3 26030000 		.4byte	.LASF17
+ 565 00c7 02       		.uleb128 0x2
+ 566 00c8 01       		.byte	0x1
+ 567 00c9 08       		.byte	0x8
+ 568 00ca 87020000 		.4byte	.LASF18
+ 569 00ce 05       		.uleb128 0x5
+ 570 00cf EE000000 		.4byte	.LASF19
+ 571 00d3 04       		.byte	0x4
+ 572 00d4 A002     		.2byte	0x2a0
+ 573 00d6 DA000000 		.4byte	0xda
+ 574 00da 06       		.uleb128 0x6
+ 575 00db 04       		.byte	0x4
+ 576 00dc E0000000 		.4byte	0xe0
+ 577 00e0 07       		.uleb128 0x7
+ 578 00e1 02       		.uleb128 0x2
+ 579 00e2 04       		.byte	0x4
+ 580 00e3 07       		.byte	0x7
+ 581 00e4 63000000 		.4byte	.LASF20
+ 582 00e8 02       		.uleb128 0x2
+ 583 00e9 08       		.byte	0x8
+ 584 00ea 04       		.byte	0x4
+ 585 00eb 91010000 		.4byte	.LASF21
+ 586 00ef 03       		.uleb128 0x3
+ 587 00f0 33010000 		.4byte	.LASF22
+ 588 00f4 05       		.byte	0x5
+ 589 00f5 38       		.byte	0x38
+ 590 00f6 57000000 		.4byte	0x57
+ 591 00fa 03       		.uleb128 0x3
+ 592 00fb D8020000 		.4byte	.LASF23
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 15
+
+
+ 593 00ff 05       		.byte	0x5
+ 594 0100 39       		.byte	0x39
+ 595 0101 69000000 		.4byte	0x69
+ 596 0105 03       		.uleb128 0x3
+ 597 0106 4E020000 		.4byte	.LASF24
+ 598 010a 05       		.byte	0x5
+ 599 010b 3F       		.byte	0x3f
+ 600 010c A2000000 		.4byte	0xa2
+ 601 0110 03       		.uleb128 0x3
+ 602 0111 FF010000 		.4byte	.LASF25
+ 603 0115 06       		.byte	0x6
+ 604 0116 3E       		.byte	0x3e
+ 605 0117 1B010000 		.4byte	0x11b
+ 606 011b 06       		.uleb128 0x6
+ 607 011c 04       		.byte	0x4
+ 608 011d 21010000 		.4byte	0x121
+ 609 0121 08       		.uleb128 0x8
+ 610 0122 3E010000 		.4byte	.LASF27
+ 611 0126 03       		.uleb128 0x3
+ 612 0127 66010000 		.4byte	.LASF26
+ 613 012b 07       		.byte	0x7
+ 614 012c 30       		.byte	0x30
+ 615 012d 31010000 		.4byte	0x131
+ 616 0131 06       		.uleb128 0x6
+ 617 0132 04       		.byte	0x4
+ 618 0133 37010000 		.4byte	0x137
+ 619 0137 08       		.uleb128 0x8
+ 620 0138 64020000 		.4byte	.LASF28
+ 621 013c 03       		.uleb128 0x3
+ 622 013d B1010000 		.4byte	.LASF29
+ 623 0141 08       		.byte	0x8
+ 624 0142 25       		.byte	0x25
+ 625 0143 26010000 		.4byte	0x126
+ 626 0147 03       		.uleb128 0x3
+ 627 0148 0D000000 		.4byte	.LASF30
+ 628 014c 09       		.byte	0x9
+ 629 014d 10       		.byte	0x10
+ 630 014e AD000000 		.4byte	0xad
+ 631 0152 09       		.uleb128 0x9
+ 632 0153 4C040000 		.4byte	.LASF67
+ 633 0157 01       		.byte	0x1
+ 634 0158 56       		.byte	0x56
+ 635 0159 00000000 		.4byte	.LFB69
+ 636 015d 20000000 		.4byte	.LFE69-.LFB69
+ 637 0161 01       		.uleb128 0x1
+ 638 0162 9C       		.byte	0x9c
+ 639 0163 88010000 		.4byte	0x188
+ 640 0167 0A       		.uleb128 0xa
+ 641 0168 94020000 		.4byte	.LASF31
+ 642 016c 01       		.byte	0x1
+ 643 016d 59       		.byte	0x59
+ 644 016e 0A       		.uleb128 0xa
+ 645 016f 6C000000 		.4byte	.LASF32
+ 646 0173 01       		.byte	0x1
+ 647 0174 5A       		.byte	0x5a
+ 648 0175 0A       		.uleb128 0xa
+ 649 0176 C3010000 		.4byte	.LASF33
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 16
+
+
+ 650 017a 01       		.byte	0x1
+ 651 017b 5B       		.byte	0x5b
+ 652 017c 0B       		.uleb128 0xb
+ 653 017d 40000000 		.4byte	.LASF43
+ 654 0181 01       		.byte	0x1
+ 655 0182 5C       		.byte	0x5c
+ 656 0183 88010000 		.4byte	0x188
+ 657 0187 00       		.byte	0
+ 658 0188 0C       		.uleb128 0xc
+ 659 0189 CE000000 		.4byte	0xce
+ 660 018d 93010000 		.4byte	0x193
+ 661 0191 0D       		.uleb128 0xd
+ 662 0192 00       		.byte	0
+ 663 0193 0E       		.uleb128 0xe
+ 664 0194 B3000000 		.4byte	.LASF34
+ 665 0198 01       		.byte	0x1
+ 666 0199 78       		.byte	0x78
+ 667 019a 00000000 		.4byte	.LFB72
+ 668 019e 18000000 		.4byte	.LFE72-.LFB72
+ 669 01a2 01       		.uleb128 0x1
+ 670 01a3 9C       		.byte	0x9c
+ 671 01a4 C6010000 		.4byte	0x1c6
+ 672 01a8 0F       		.uleb128 0xf
+ 673 01a9 0E000000 		.4byte	.LVL0
+ 674 01ad C6050000 		.4byte	0x5c6
+ 675 01b1 BC010000 		.4byte	0x1bc
+ 676 01b5 10       		.uleb128 0x10
+ 677 01b6 01       		.uleb128 0x1
+ 678 01b7 51       		.byte	0x51
+ 679 01b8 02       		.uleb128 0x2
+ 680 01b9 09       		.byte	0x9
+ 681 01ba FF       		.byte	0xff
+ 682 01bb 00       		.byte	0
+ 683 01bc 11       		.uleb128 0x11
+ 684 01bd 12000000 		.4byte	.LVL1
+ 685 01c1 D2050000 		.4byte	0x5d2
+ 686 01c5 00       		.byte	0
+ 687 01c6 0E       		.uleb128 0xe
+ 688 01c7 4D000000 		.4byte	.LASF35
+ 689 01cb 01       		.byte	0x1
+ 690 01cc 84       		.byte	0x84
+ 691 01cd 00000000 		.4byte	.LFB73
+ 692 01d1 44000000 		.4byte	.LFE73-.LFB73
+ 693 01d5 01       		.uleb128 0x1
+ 694 01d6 9C       		.byte	0x9c
+ 695 01d7 52020000 		.4byte	0x252
+ 696 01db 12       		.uleb128 0x12
+ 697 01dc 11030000 		.4byte	.LASF36
+ 698 01e0 01       		.byte	0x1
+ 699 01e1 85       		.byte	0x85
+ 700 01e2 47010000 		.4byte	0x147
+ 701 01e6 00000000 		.4byte	.LLST0
+ 702 01ea 13       		.uleb128 0x13
+ 703 01eb 8C010000 		.4byte	.LASF37
+ 704 01ef 01       		.byte	0x1
+ 705 01f0 85       		.byte	0x85
+ 706 01f1 47010000 		.4byte	0x147
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 17
+
+
+ 707 01f5 02       		.uleb128 0x2
+ 708 01f6 91       		.byte	0x91
+ 709 01f7 77       		.sleb128 -9
+ 710 01f8 0F       		.uleb128 0xf
+ 711 01f9 14000000 		.4byte	.LVL2
+ 712 01fd DD050000 		.4byte	0x5dd
+ 713 0201 12020000 		.4byte	0x212
+ 714 0205 10       		.uleb128 0x10
+ 715 0206 01       		.uleb128 0x1
+ 716 0207 51       		.byte	0x51
+ 717 0208 02       		.uleb128 0x2
+ 718 0209 91       		.byte	0x91
+ 719 020a 77       		.sleb128 -9
+ 720 020b 10       		.uleb128 0x10
+ 721 020c 01       		.uleb128 0x1
+ 722 020d 52       		.byte	0x52
+ 723 020e 02       		.uleb128 0x2
+ 724 020f 09       		.byte	0x9
+ 725 0210 FF       		.byte	0xff
+ 726 0211 00       		.byte	0
+ 727 0212 0F       		.uleb128 0xf
+ 728 0213 20000000 		.4byte	.LVL3
+ 729 0217 C6050000 		.4byte	0x5c6
+ 730 021b 26020000 		.4byte	0x226
+ 731 021f 10       		.uleb128 0x10
+ 732 0220 01       		.uleb128 0x1
+ 733 0221 51       		.byte	0x51
+ 734 0222 02       		.uleb128 0x2
+ 735 0223 09       		.byte	0x9
+ 736 0224 FF       		.byte	0xff
+ 737 0225 00       		.byte	0
+ 738 0226 11       		.uleb128 0x11
+ 739 0227 28000000 		.4byte	.LVL4
+ 740 022b E9050000 		.4byte	0x5e9
+ 741 022f 11       		.uleb128 0x11
+ 742 0230 2C000000 		.4byte	.LVL5
+ 743 0234 F4050000 		.4byte	0x5f4
+ 744 0238 14       		.uleb128 0x14
+ 745 0239 38000000 		.4byte	.LVL6
+ 746 023d FF050000 		.4byte	0x5ff
+ 747 0241 10       		.uleb128 0x10
+ 748 0242 01       		.uleb128 0x1
+ 749 0243 51       		.byte	0x51
+ 750 0244 01       		.uleb128 0x1
+ 751 0245 30       		.byte	0x30
+ 752 0246 10       		.uleb128 0x10
+ 753 0247 01       		.uleb128 0x1
+ 754 0248 52       		.byte	0x52
+ 755 0249 01       		.uleb128 0x1
+ 756 024a 30       		.byte	0x30
+ 757 024b 10       		.uleb128 0x10
+ 758 024c 01       		.uleb128 0x1
+ 759 024d 53       		.byte	0x53
+ 760 024e 01       		.uleb128 0x1
+ 761 024f 30       		.byte	0x30
+ 762 0250 00       		.byte	0
+ 763 0251 00       		.byte	0
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 18
+
+
+ 764 0252 0E       		.uleb128 0xe
+ 765 0253 00000000 		.4byte	.LASF38
+ 766 0257 01       		.byte	0x1
+ 767 0258 A2       		.byte	0xa2
+ 768 0259 00000000 		.4byte	.LFB75
+ 769 025d 2C000000 		.4byte	.LFE75-.LFB75
+ 770 0261 01       		.uleb128 0x1
+ 771 0262 9C       		.byte	0x9c
+ 772 0263 C0020000 		.4byte	0x2c0
+ 773 0267 12       		.uleb128 0x12
+ 774 0268 FB000000 		.4byte	.LASF39
+ 775 026c 01       		.byte	0x1
+ 776 026d A3       		.byte	0xa3
+ 777 026e 47010000 		.4byte	0x147
+ 778 0272 13000000 		.4byte	.LLST1
+ 779 0276 0F       		.uleb128 0xf
+ 780 0277 0E000000 		.4byte	.LVL7
+ 781 027b C6050000 		.4byte	0x5c6
+ 782 027f 8A020000 		.4byte	0x28a
+ 783 0283 10       		.uleb128 0x10
+ 784 0284 01       		.uleb128 0x1
+ 785 0285 51       		.byte	0x51
+ 786 0286 02       		.uleb128 0x2
+ 787 0287 09       		.byte	0x9
+ 788 0288 FF       		.byte	0xff
+ 789 0289 00       		.byte	0
+ 790 028a 0F       		.uleb128 0xf
+ 791 028b 14000000 		.4byte	.LVL8
+ 792 028f E9050000 		.4byte	0x5e9
+ 793 0293 9D020000 		.4byte	0x29d
+ 794 0297 10       		.uleb128 0x10
+ 795 0298 01       		.uleb128 0x1
+ 796 0299 50       		.byte	0x50
+ 797 029a 01       		.uleb128 0x1
+ 798 029b 30       		.byte	0x30
+ 799 029c 00       		.byte	0
+ 800 029d 11       		.uleb128 0x11
+ 801 029e 18000000 		.4byte	.LVL9
+ 802 02a2 F4050000 		.4byte	0x5f4
+ 803 02a6 14       		.uleb128 0x14
+ 804 02a7 24000000 		.4byte	.LVL10
+ 805 02ab FF050000 		.4byte	0x5ff
+ 806 02af 10       		.uleb128 0x10
+ 807 02b0 01       		.uleb128 0x1
+ 808 02b1 51       		.byte	0x51
+ 809 02b2 01       		.uleb128 0x1
+ 810 02b3 30       		.byte	0x30
+ 811 02b4 10       		.uleb128 0x10
+ 812 02b5 01       		.uleb128 0x1
+ 813 02b6 52       		.byte	0x52
+ 814 02b7 01       		.uleb128 0x1
+ 815 02b8 30       		.byte	0x30
+ 816 02b9 10       		.uleb128 0x10
+ 817 02ba 01       		.uleb128 0x1
+ 818 02bb 53       		.byte	0x53
+ 819 02bc 01       		.uleb128 0x1
+ 820 02bd 30       		.byte	0x30
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 19
+
+
+ 821 02be 00       		.byte	0
+ 822 02bf 00       		.byte	0
+ 823 02c0 0E       		.uleb128 0xe
+ 824 02c1 EE020000 		.4byte	.LASF40
+ 825 02c5 01       		.byte	0x1
+ 826 02c6 95       		.byte	0x95
+ 827 02c7 00000000 		.4byte	.LFB74
+ 828 02cb 12000000 		.4byte	.LFE74-.LFB74
+ 829 02cf 01       		.uleb128 0x1
+ 830 02d0 9C       		.byte	0x9c
+ 831 02d1 FE020000 		.4byte	0x2fe
+ 832 02d5 0F       		.uleb128 0xf
+ 833 02d6 0A000000 		.4byte	.LVL11
+ 834 02da 0B060000 		.4byte	0x60b
+ 835 02de ED020000 		.4byte	0x2ed
+ 836 02e2 10       		.uleb128 0x10
+ 837 02e3 01       		.uleb128 0x1
+ 838 02e4 50       		.byte	0x50
+ 839 02e5 01       		.uleb128 0x1
+ 840 02e6 30       		.byte	0x30
+ 841 02e7 10       		.uleb128 0x10
+ 842 02e8 01       		.uleb128 0x1
+ 843 02e9 51       		.byte	0x51
+ 844 02ea 01       		.uleb128 0x1
+ 845 02eb 30       		.byte	0x30
+ 846 02ec 00       		.byte	0
+ 847 02ed 14       		.uleb128 0x14
+ 848 02ee 10000000 		.4byte	.LVL12
+ 849 02f2 16060000 		.4byte	0x616
+ 850 02f6 10       		.uleb128 0x10
+ 851 02f7 01       		.uleb128 0x1
+ 852 02f8 50       		.byte	0x50
+ 853 02f9 02       		.uleb128 0x2
+ 854 02fa 08       		.byte	0x8
+ 855 02fb C8       		.byte	0xc8
+ 856 02fc 00       		.byte	0
+ 857 02fd 00       		.byte	0
+ 858 02fe 15       		.uleb128 0x15
+ 859 02ff 8B000000 		.4byte	.LASF68
+ 860 0303 01       		.byte	0x1
+ 861 0304 38       		.byte	0x38
+ 862 0305 7E000000 		.4byte	0x7e
+ 863 0309 00000000 		.4byte	.LFB68
+ 864 030d F4000000 		.4byte	.LFE68-.LFB68
+ 865 0311 01       		.uleb128 0x1
+ 866 0312 9C       		.byte	0x9c
+ 867 0313 B7040000 		.4byte	0x4b7
+ 868 0317 11       		.uleb128 0x11
+ 869 0318 0A000000 		.4byte	.LVL13
+ 870 031c 52010000 		.4byte	0x152
+ 871 0320 11       		.uleb128 0x11
+ 872 0321 0E000000 		.4byte	.LVL14
+ 873 0325 22060000 		.4byte	0x622
+ 874 0329 11       		.uleb128 0x11
+ 875 032a 12000000 		.4byte	.LVL15
+ 876 032e 2D060000 		.4byte	0x62d
+ 877 0332 0F       		.uleb128 0xf
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 20
+
+
+ 878 0333 28000000 		.4byte	.LVL16
+ 879 0337 38060000 		.4byte	0x638
+ 880 033b 65030000 		.4byte	0x365
+ 881 033f 10       		.uleb128 0x10
+ 882 0340 01       		.uleb128 0x1
+ 883 0341 51       		.byte	0x51
+ 884 0342 05       		.uleb128 0x5
+ 885 0343 03       		.byte	0x3
+ 886 0344 00000000 		.4byte	.LC0
+ 887 0348 10       		.uleb128 0x10
+ 888 0349 01       		.uleb128 0x1
+ 889 034a 52       		.byte	0x52
+ 890 034b 03       		.uleb128 0x3
+ 891 034c 0A       		.byte	0xa
+ 892 034d 0004     		.2byte	0x400
+ 893 034f 10       		.uleb128 0x10
+ 894 0350 01       		.uleb128 0x1
+ 895 0351 53       		.byte	0x53
+ 896 0352 01       		.uleb128 0x1
+ 897 0353 30       		.byte	0x30
+ 898 0354 10       		.uleb128 0x10
+ 899 0355 02       		.uleb128 0x2
+ 900 0356 7D       		.byte	0x7d
+ 901 0357 00       		.sleb128 0
+ 902 0358 01       		.uleb128 0x1
+ 903 0359 44       		.byte	0x44
+ 904 035a 10       		.uleb128 0x10
+ 905 035b 02       		.uleb128 0x2
+ 906 035c 7D       		.byte	0x7d
+ 907 035d 04       		.sleb128 4
+ 908 035e 05       		.uleb128 0x5
+ 909 035f 03       		.byte	0x3
+ 910 0360 00000000 		.4byte	gameHandler
+ 911 0364 00       		.byte	0
+ 912 0365 0F       		.uleb128 0xf
+ 913 0366 3E000000 		.4byte	.LVL17
+ 914 036a 38060000 		.4byte	0x638
+ 915 036e A2030000 		.4byte	0x3a2
+ 916 0372 10       		.uleb128 0x10
+ 917 0373 01       		.uleb128 0x1
+ 918 0374 50       		.byte	0x50
+ 919 0375 05       		.uleb128 0x5
+ 920 0376 03       		.byte	0x3
+ 921 0377 00000000 		.4byte	quarantineTask
+ 922 037b 10       		.uleb128 0x10
+ 923 037c 01       		.uleb128 0x1
+ 924 037d 51       		.byte	0x51
+ 925 037e 05       		.uleb128 0x5
+ 926 037f 03       		.byte	0x3
+ 927 0380 0C000000 		.4byte	.LC1
+ 928 0384 10       		.uleb128 0x10
+ 929 0385 01       		.uleb128 0x1
+ 930 0386 52       		.byte	0x52
+ 931 0387 03       		.uleb128 0x3
+ 932 0388 0A       		.byte	0xa
+ 933 0389 0004     		.2byte	0x400
+ 934 038b 10       		.uleb128 0x10
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 21
+
+
+ 935 038c 01       		.uleb128 0x1
+ 936 038d 53       		.byte	0x53
+ 937 038e 01       		.uleb128 0x1
+ 938 038f 30       		.byte	0x30
+ 939 0390 10       		.uleb128 0x10
+ 940 0391 02       		.uleb128 0x2
+ 941 0392 7D       		.byte	0x7d
+ 942 0393 00       		.sleb128 0
+ 943 0394 02       		.uleb128 0x2
+ 944 0395 76       		.byte	0x76
+ 945 0396 00       		.sleb128 0
+ 946 0397 10       		.uleb128 0x10
+ 947 0398 02       		.uleb128 0x2
+ 948 0399 7D       		.byte	0x7d
+ 949 039a 04       		.sleb128 4
+ 950 039b 05       		.uleb128 0x5
+ 951 039c 03       		.byte	0x3
+ 952 039d 00000000 		.4byte	quarantineHandler
+ 953 03a1 00       		.byte	0
+ 954 03a2 0F       		.uleb128 0xf
+ 955 03a3 54000000 		.4byte	.LVL18
+ 956 03a7 38060000 		.4byte	0x638
+ 957 03ab DE030000 		.4byte	0x3de
+ 958 03af 10       		.uleb128 0x10
+ 959 03b0 01       		.uleb128 0x1
+ 960 03b1 50       		.byte	0x50
+ 961 03b2 05       		.uleb128 0x5
+ 962 03b3 03       		.byte	0x3
+ 963 03b4 00000000 		.4byte	vaccineTask
+ 964 03b8 10       		.uleb128 0x10
+ 965 03b9 01       		.uleb128 0x1
+ 966 03ba 51       		.byte	0x51
+ 967 03bb 05       		.uleb128 0x5
+ 968 03bc 03       		.byte	0x3
+ 969 03bd 1C000000 		.4byte	.LC2
+ 970 03c1 10       		.uleb128 0x10
+ 971 03c2 01       		.uleb128 0x1
+ 972 03c3 52       		.byte	0x52
+ 973 03c4 03       		.uleb128 0x3
+ 974 03c5 0A       		.byte	0xa
+ 975 03c6 0004     		.2byte	0x400
+ 976 03c8 10       		.uleb128 0x10
+ 977 03c9 01       		.uleb128 0x1
+ 978 03ca 53       		.byte	0x53
+ 979 03cb 01       		.uleb128 0x1
+ 980 03cc 30       		.byte	0x30
+ 981 03cd 10       		.uleb128 0x10
+ 982 03ce 02       		.uleb128 0x2
+ 983 03cf 7D       		.byte	0x7d
+ 984 03d0 00       		.sleb128 0
+ 985 03d1 01       		.uleb128 0x1
+ 986 03d2 32       		.byte	0x32
+ 987 03d3 10       		.uleb128 0x10
+ 988 03d4 02       		.uleb128 0x2
+ 989 03d5 7D       		.byte	0x7d
+ 990 03d6 04       		.sleb128 4
+ 991 03d7 05       		.uleb128 0x5
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 22
+
+
+ 992 03d8 03       		.byte	0x3
+ 993 03d9 00000000 		.4byte	vaccineHandler
+ 994 03dd 00       		.byte	0
+ 995 03de 0F       		.uleb128 0xf
+ 996 03df 6A000000 		.4byte	.LVL19
+ 997 03e3 38060000 		.4byte	0x638
+ 998 03e7 1B040000 		.4byte	0x41b
+ 999 03eb 10       		.uleb128 0x10
+ 1000 03ec 01       		.uleb128 0x1
+ 1001 03ed 50       		.byte	0x50
+ 1002 03ee 05       		.uleb128 0x5
+ 1003 03ef 03       		.byte	0x3
+ 1004 03f0 00000000 		.4byte	screenUpdateTask
+ 1005 03f4 10       		.uleb128 0x10
+ 1006 03f5 01       		.uleb128 0x1
+ 1007 03f6 51       		.byte	0x51
+ 1008 03f7 05       		.uleb128 0x5
+ 1009 03f8 03       		.byte	0x3
+ 1010 03f9 2C000000 		.4byte	.LC3
+ 1011 03fd 10       		.uleb128 0x10
+ 1012 03fe 01       		.uleb128 0x1
+ 1013 03ff 52       		.byte	0x52
+ 1014 0400 03       		.uleb128 0x3
+ 1015 0401 0A       		.byte	0xa
+ 1016 0402 0004     		.2byte	0x400
+ 1017 0404 10       		.uleb128 0x10
+ 1018 0405 01       		.uleb128 0x1
+ 1019 0406 53       		.byte	0x53
+ 1020 0407 01       		.uleb128 0x1
+ 1021 0408 30       		.byte	0x30
+ 1022 0409 10       		.uleb128 0x10
+ 1023 040a 02       		.uleb128 0x2
+ 1024 040b 7D       		.byte	0x7d
+ 1025 040c 00       		.sleb128 0
+ 1026 040d 02       		.uleb128 0x2
+ 1027 040e 74       		.byte	0x74
+ 1028 040f 00       		.sleb128 0
+ 1029 0410 10       		.uleb128 0x10
+ 1030 0411 02       		.uleb128 0x2
+ 1031 0412 7D       		.byte	0x7d
+ 1032 0413 04       		.sleb128 4
+ 1033 0414 05       		.uleb128 0x5
+ 1034 0415 03       		.byte	0x3
+ 1035 0416 00000000 		.4byte	screenUpdateHandler
+ 1036 041a 00       		.byte	0
+ 1037 041b 0F       		.uleb128 0xf
+ 1038 041c 80000000 		.4byte	.LVL20
+ 1039 0420 38060000 		.4byte	0x638
+ 1040 0424 59040000 		.4byte	0x459
+ 1041 0428 10       		.uleb128 0x10
+ 1042 0429 01       		.uleb128 0x1
+ 1043 042a 50       		.byte	0x50
+ 1044 042b 05       		.uleb128 0x5
+ 1045 042c 03       		.byte	0x3
+ 1046 042d 00000000 		.4byte	medicineTask
+ 1047 0431 10       		.uleb128 0x10
+ 1048 0432 01       		.uleb128 0x1
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 23
+
+
+ 1049 0433 51       		.byte	0x51
+ 1050 0434 05       		.uleb128 0x5
+ 1051 0435 03       		.byte	0x3
+ 1052 0436 40000000 		.4byte	.LC4
+ 1053 043a 10       		.uleb128 0x10
+ 1054 043b 01       		.uleb128 0x1
+ 1055 043c 52       		.byte	0x52
+ 1056 043d 03       		.uleb128 0x3
+ 1057 043e 0A       		.byte	0xa
+ 1058 043f 0004     		.2byte	0x400
+ 1059 0441 10       		.uleb128 0x10
+ 1060 0442 01       		.uleb128 0x1
+ 1061 0443 53       		.byte	0x53
+ 1062 0444 02       		.uleb128 0x2
+ 1063 0445 75       		.byte	0x75
+ 1064 0446 00       		.sleb128 0
+ 1065 0447 10       		.uleb128 0x10
+ 1066 0448 02       		.uleb128 0x2
+ 1067 0449 7D       		.byte	0x7d
+ 1068 044a 00       		.sleb128 0
+ 1069 044b 02       		.uleb128 0x2
+ 1070 044c 75       		.byte	0x75
+ 1071 044d 00       		.sleb128 0
+ 1072 044e 10       		.uleb128 0x10
+ 1073 044f 02       		.uleb128 0x2
+ 1074 0450 7D       		.byte	0x7d
+ 1075 0451 04       		.sleb128 4
+ 1076 0452 05       		.uleb128 0x5
+ 1077 0453 03       		.byte	0x3
+ 1078 0454 00000000 		.4byte	medicineHandler
+ 1079 0458 00       		.byte	0
+ 1080 0459 0F       		.uleb128 0xf
+ 1081 045a 8A000000 		.4byte	.LVL21
+ 1082 045e 44060000 		.4byte	0x644
+ 1083 0462 79040000 		.4byte	0x479
+ 1084 0466 10       		.uleb128 0x10
+ 1085 0467 01       		.uleb128 0x1
+ 1086 0468 50       		.byte	0x50
+ 1087 0469 02       		.uleb128 0x2
+ 1088 046a 74       		.byte	0x74
+ 1089 046b 00       		.sleb128 0
+ 1090 046c 10       		.uleb128 0x10
+ 1091 046d 01       		.uleb128 0x1
+ 1092 046e 51       		.byte	0x51
+ 1093 046f 02       		.uleb128 0x2
+ 1094 0470 75       		.byte	0x75
+ 1095 0471 00       		.sleb128 0
+ 1096 0472 10       		.uleb128 0x10
+ 1097 0473 01       		.uleb128 0x1
+ 1098 0474 52       		.byte	0x52
+ 1099 0475 02       		.uleb128 0x2
+ 1100 0476 76       		.byte	0x76
+ 1101 0477 00       		.sleb128 0
+ 1102 0478 00       		.byte	0
+ 1103 0479 0F       		.uleb128 0xf
+ 1104 047a 94000000 		.4byte	.LVL22
+ 1105 047e 50060000 		.4byte	0x650
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 24
+
+
+ 1106 0482 8D040000 		.4byte	0x48d
+ 1107 0486 10       		.uleb128 0x10
+ 1108 0487 01       		.uleb128 0x1
+ 1109 0488 50       		.byte	0x50
+ 1110 0489 02       		.uleb128 0x2
+ 1111 048a 74       		.byte	0x74
+ 1112 048b 00       		.sleb128 0
+ 1113 048c 00       		.byte	0
+ 1114 048d 0F       		.uleb128 0xf
+ 1115 048e A2000000 		.4byte	.LVL23
+ 1116 0492 44060000 		.4byte	0x644
+ 1117 0496 AD040000 		.4byte	0x4ad
+ 1118 049a 10       		.uleb128 0x10
+ 1119 049b 01       		.uleb128 0x1
+ 1120 049c 50       		.byte	0x50
+ 1121 049d 02       		.uleb128 0x2
+ 1122 049e 74       		.byte	0x74
+ 1123 049f 00       		.sleb128 0
+ 1124 04a0 10       		.uleb128 0x10
+ 1125 04a1 01       		.uleb128 0x1
+ 1126 04a2 51       		.byte	0x51
+ 1127 04a3 02       		.uleb128 0x2
+ 1128 04a4 74       		.byte	0x74
+ 1129 04a5 00       		.sleb128 0
+ 1130 04a6 10       		.uleb128 0x10
+ 1131 04a7 01       		.uleb128 0x1
+ 1132 04a8 52       		.byte	0x52
+ 1133 04a9 02       		.uleb128 0x2
+ 1134 04aa 75       		.byte	0x75
+ 1135 04ab 00       		.sleb128 0
+ 1136 04ac 00       		.byte	0
+ 1137 04ad 11       		.uleb128 0x11
+ 1138 04ae AA000000 		.4byte	.LVL24
+ 1139 04b2 5C060000 		.4byte	0x65c
+ 1140 04b6 00       		.byte	0
+ 1141 04b7 16       		.uleb128 0x16
+ 1142 04b8 39020000 		.4byte	.LASF41
+ 1143 04bc 01       		.byte	0x1
+ 1144 04bd 68       		.byte	0x68
+ 1145 04be 00000000 		.4byte	.LFB70
+ 1146 04c2 18000000 		.4byte	.LFE70-.LFB70
+ 1147 04c6 01       		.uleb128 0x1
+ 1148 04c7 9C       		.byte	0x9c
+ 1149 04c8 E6040000 		.4byte	0x4e6
+ 1150 04cc 14       		.uleb128 0x14
+ 1151 04cd 10000000 		.4byte	.LVL25
+ 1152 04d1 FF050000 		.4byte	0x5ff
+ 1153 04d5 10       		.uleb128 0x10
+ 1154 04d6 01       		.uleb128 0x1
+ 1155 04d7 51       		.byte	0x51
+ 1156 04d8 01       		.uleb128 0x1
+ 1157 04d9 30       		.byte	0x30
+ 1158 04da 10       		.uleb128 0x10
+ 1159 04db 01       		.uleb128 0x1
+ 1160 04dc 52       		.byte	0x52
+ 1161 04dd 01       		.uleb128 0x1
+ 1162 04de 30       		.byte	0x30
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 25
+
+
+ 1163 04df 10       		.uleb128 0x10
+ 1164 04e0 01       		.uleb128 0x1
+ 1165 04e1 53       		.byte	0x53
+ 1166 04e2 01       		.uleb128 0x1
+ 1167 04e3 30       		.byte	0x30
+ 1168 04e4 00       		.byte	0
+ 1169 04e5 00       		.byte	0
+ 1170 04e6 16       		.uleb128 0x16
+ 1171 04e7 21000000 		.4byte	.LASF42
+ 1172 04eb 01       		.byte	0x1
+ 1173 04ec 70       		.byte	0x70
+ 1174 04ed 00000000 		.4byte	.LFB71
+ 1175 04f1 24000000 		.4byte	.LFE71-.LFB71
+ 1176 04f5 01       		.uleb128 0x1
+ 1177 04f6 9C       		.byte	0x9c
+ 1178 04f7 26050000 		.4byte	0x526
+ 1179 04fb 17       		.uleb128 0x17
+ 1180 04fc 8C010000 		.4byte	.LASF37
+ 1181 0500 01       		.byte	0x1
+ 1182 0501 70       		.byte	0x70
+ 1183 0502 47010000 		.4byte	0x147
+ 1184 0506 26000000 		.4byte	.LLST2
+ 1185 050a 14       		.uleb128 0x14
+ 1186 050b 18000000 		.4byte	.LVL28
+ 1187 050f FF050000 		.4byte	0x5ff
+ 1188 0513 10       		.uleb128 0x10
+ 1189 0514 01       		.uleb128 0x1
+ 1190 0515 51       		.byte	0x51
+ 1191 0516 02       		.uleb128 0x2
+ 1192 0517 91       		.byte	0x91
+ 1193 0518 77       		.sleb128 -9
+ 1194 0519 10       		.uleb128 0x10
+ 1195 051a 01       		.uleb128 0x1
+ 1196 051b 52       		.byte	0x52
+ 1197 051c 02       		.uleb128 0x2
+ 1198 051d 09       		.byte	0x9
+ 1199 051e FF       		.byte	0xff
+ 1200 051f 10       		.uleb128 0x10
+ 1201 0520 01       		.uleb128 0x1
+ 1202 0521 53       		.byte	0x53
+ 1203 0522 01       		.uleb128 0x1
+ 1204 0523 30       		.byte	0x30
+ 1205 0524 00       		.byte	0
+ 1206 0525 00       		.byte	0
+ 1207 0526 18       		.uleb128 0x18
+ 1208 0527 A8030000 		.4byte	.LASF44
+ 1209 052b 0A       		.byte	0xa
+ 1210 052c 1207     		.2byte	0x712
+ 1211 052e 32050000 		.4byte	0x532
+ 1212 0532 19       		.uleb128 0x19
+ 1213 0533 97000000 		.4byte	0x97
+ 1214 0537 1A       		.uleb128 0x1a
+ 1215 0538 733100   		.ascii	"s1\000"
+ 1216 053b 01       		.byte	0x1
+ 1217 053c 26       		.byte	0x26
+ 1218 053d 3C010000 		.4byte	0x13c
+ 1219 0541 05       		.uleb128 0x5
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 26
+
+
+ 1220 0542 03       		.byte	0x3
+ 1221 0543 00000000 		.4byte	s1
+ 1222 0547 1A       		.uleb128 0x1a
+ 1223 0548 733200   		.ascii	"s2\000"
+ 1224 054b 01       		.byte	0x1
+ 1225 054c 26       		.byte	0x26
+ 1226 054d 3C010000 		.4byte	0x13c
+ 1227 0551 05       		.uleb128 0x5
+ 1228 0552 03       		.byte	0x3
+ 1229 0553 00000000 		.4byte	s2
+ 1230 0557 1A       		.uleb128 0x1a
+ 1231 0558 7100     		.ascii	"q\000"
+ 1232 055a 01       		.byte	0x1
+ 1233 055b 27       		.byte	0x27
+ 1234 055c 26010000 		.4byte	0x126
+ 1235 0560 05       		.uleb128 0x5
+ 1236 0561 03       		.byte	0x3
+ 1237 0562 00000000 		.4byte	q
+ 1238 0566 1B       		.uleb128 0x1b
+ 1239 0567 A7020000 		.4byte	.LASF45
+ 1240 056b 01       		.byte	0x1
+ 1241 056c 2A       		.byte	0x2a
+ 1242 056d 10010000 		.4byte	0x110
+ 1243 0571 05       		.uleb128 0x5
+ 1244 0572 03       		.byte	0x3
+ 1245 0573 00000000 		.4byte	gameHandler
+ 1246 0577 1B       		.uleb128 0x1b
+ 1247 0578 FF020000 		.4byte	.LASF46
+ 1248 057c 01       		.byte	0x1
+ 1249 057d 2A       		.byte	0x2a
+ 1250 057e 10010000 		.4byte	0x110
+ 1251 0582 05       		.uleb128 0x5
+ 1252 0583 03       		.byte	0x3
+ 1253 0584 00000000 		.4byte	quarantineHandler
+ 1254 0588 1B       		.uleb128 0x1b
+ 1255 0589 63040000 		.4byte	.LASF47
+ 1256 058d 01       		.byte	0x1
+ 1257 058e 2A       		.byte	0x2a
+ 1258 058f 10010000 		.4byte	0x110
+ 1259 0593 05       		.uleb128 0x5
+ 1260 0594 03       		.byte	0x3
+ 1261 0595 00000000 		.4byte	vaccineHandler
+ 1262 0599 1B       		.uleb128 0x1b
+ 1263 059a 52010000 		.4byte	.LASF48
+ 1264 059e 01       		.byte	0x1
+ 1265 059f 2B       		.byte	0x2b
+ 1266 05a0 10010000 		.4byte	0x110
+ 1267 05a4 05       		.uleb128 0x5
+ 1268 05a5 03       		.byte	0x3
+ 1269 05a6 00000000 		.4byte	screenUpdateHandler
+ 1270 05aa 1B       		.uleb128 0x1b
+ 1271 05ab 9B000000 		.4byte	.LASF49
+ 1272 05af 01       		.byte	0x1
+ 1273 05b0 2B       		.byte	0x2b
+ 1274 05b1 10010000 		.4byte	0x110
+ 1275 05b5 05       		.uleb128 0x5
+ 1276 05b6 03       		.byte	0x3
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 27
+
+
+ 1277 05b7 00000000 		.4byte	medicineHandler
+ 1278 05bb 0B       		.uleb128 0xb
+ 1279 05bc 40000000 		.4byte	.LASF43
+ 1280 05c0 01       		.byte	0x1
+ 1281 05c1 5C       		.byte	0x5c
+ 1282 05c2 88010000 		.4byte	0x188
+ 1283 05c6 1C       		.uleb128 0x1c
+ 1284 05c7 25020000 		.4byte	.LASF50
+ 1285 05cb 25020000 		.4byte	.LASF50
+ 1286 05cf 07       		.byte	0x7
+ 1287 05d0 8A05     		.2byte	0x58a
+ 1288 05d2 1D       		.uleb128 0x1d
+ 1289 05d3 59020000 		.4byte	.LASF51
+ 1290 05d7 59020000 		.4byte	.LASF51
+ 1291 05db 09       		.byte	0x9
+ 1292 05dc 26       		.byte	0x26
+ 1293 05dd 1C       		.uleb128 0x1c
+ 1294 05de 13000000 		.4byte	.LASF52
+ 1295 05e2 13000000 		.4byte	.LASF52
+ 1296 05e6 07       		.byte	0x7
+ 1297 05e7 6403     		.2byte	0x364
+ 1298 05e9 1D       		.uleb128 0x1d
+ 1299 05ea 2D000000 		.4byte	.LASF53
+ 1300 05ee 2D000000 		.4byte	.LASF53
+ 1301 05f2 09       		.byte	0x9
+ 1302 05f3 30       		.byte	0x30
+ 1303 05f4 1D       		.uleb128 0x1d
+ 1304 05f5 19020000 		.4byte	.LASF54
+ 1305 05f9 19020000 		.4byte	.LASF54
+ 1306 05fd 09       		.byte	0x9
+ 1307 05fe 3E       		.byte	0x3e
+ 1308 05ff 1C       		.uleb128 0x1c
+ 1309 0600 C8000000 		.4byte	.LASF55
+ 1310 0604 C8000000 		.4byte	.LASF55
+ 1311 0608 07       		.byte	0x7
+ 1312 0609 8A02     		.2byte	0x28a
+ 1313 060b 1D       		.uleb128 0x1d
+ 1314 060c 19030000 		.4byte	.LASF56
+ 1315 0610 19030000 		.4byte	.LASF56
+ 1316 0614 0B       		.byte	0xb
+ 1317 0615 3D       		.byte	0x3d
+ 1318 0616 1C       		.uleb128 0x1c
+ 1319 0617 80000000 		.4byte	.LASF57
+ 1320 061b 80000000 		.4byte	.LASF57
+ 1321 061f 06       		.byte	0x6
+ 1322 0620 EE02     		.2byte	0x2ee
+ 1323 0622 1D       		.uleb128 0x1d
+ 1324 0623 82010000 		.4byte	.LASF58
+ 1325 0627 82010000 		.4byte	.LASF58
+ 1326 062b 0B       		.byte	0xb
+ 1327 062c 38       		.byte	0x38
+ 1328 062d 1D       		.uleb128 0x1d
+ 1329 062e 43040000 		.4byte	.LASF59
+ 1330 0632 43040000 		.4byte	.LASF59
+ 1331 0636 0C       		.byte	0xc
+ 1332 0637 0E       		.byte	0xe
+ 1333 0638 1C       		.uleb128 0x1c
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 28
+
+
+ 1334 0639 B3020000 		.4byte	.LASF60
+ 1335 063d B3020000 		.4byte	.LASF60
+ 1336 0641 06       		.byte	0x6
+ 1337 0642 4201     		.2byte	0x142
+ 1338 0644 1C       		.uleb128 0x1c
+ 1339 0645 9D010000 		.4byte	.LASF61
+ 1340 0649 9D010000 		.4byte	.LASF61
+ 1341 064d 07       		.byte	0x7
+ 1342 064e D805     		.2byte	0x5d8
+ 1343 0650 1C       		.uleb128 0x1c
+ 1344 0651 04010000 		.4byte	.LASF62
+ 1345 0655 04010000 		.4byte	.LASF62
+ 1346 0659 07       		.byte	0x7
+ 1347 065a 8605     		.2byte	0x586
+ 1348 065c 1C       		.uleb128 0x1c
+ 1349 065d 16010000 		.4byte	.LASF63
+ 1350 0661 16010000 		.4byte	.LASF63
+ 1351 0665 06       		.byte	0x6
+ 1352 0666 8F04     		.2byte	0x48f
+ 1353 0668 00       		.byte	0
+ 1354              		.section	.debug_abbrev,"",%progbits
+ 1355              	.Ldebug_abbrev0:
+ 1356 0000 01       		.uleb128 0x1
+ 1357 0001 11       		.uleb128 0x11
+ 1358 0002 01       		.byte	0x1
+ 1359 0003 25       		.uleb128 0x25
+ 1360 0004 0E       		.uleb128 0xe
+ 1361 0005 13       		.uleb128 0x13
+ 1362 0006 0B       		.uleb128 0xb
+ 1363 0007 03       		.uleb128 0x3
+ 1364 0008 0E       		.uleb128 0xe
+ 1365 0009 1B       		.uleb128 0x1b
+ 1366 000a 0E       		.uleb128 0xe
+ 1367 000b 55       		.uleb128 0x55
+ 1368 000c 17       		.uleb128 0x17
+ 1369 000d 11       		.uleb128 0x11
+ 1370 000e 01       		.uleb128 0x1
+ 1371 000f 10       		.uleb128 0x10
+ 1372 0010 17       		.uleb128 0x17
+ 1373 0011 00       		.byte	0
+ 1374 0012 00       		.byte	0
+ 1375 0013 02       		.uleb128 0x2
+ 1376 0014 24       		.uleb128 0x24
+ 1377 0015 00       		.byte	0
+ 1378 0016 0B       		.uleb128 0xb
+ 1379 0017 0B       		.uleb128 0xb
+ 1380 0018 3E       		.uleb128 0x3e
+ 1381 0019 0B       		.uleb128 0xb
+ 1382 001a 03       		.uleb128 0x3
+ 1383 001b 0E       		.uleb128 0xe
+ 1384 001c 00       		.byte	0
+ 1385 001d 00       		.byte	0
+ 1386 001e 03       		.uleb128 0x3
+ 1387 001f 16       		.uleb128 0x16
+ 1388 0020 00       		.byte	0
+ 1389 0021 03       		.uleb128 0x3
+ 1390 0022 0E       		.uleb128 0xe
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 29
+
+
+ 1391 0023 3A       		.uleb128 0x3a
+ 1392 0024 0B       		.uleb128 0xb
+ 1393 0025 3B       		.uleb128 0x3b
+ 1394 0026 0B       		.uleb128 0xb
+ 1395 0027 49       		.uleb128 0x49
+ 1396 0028 13       		.uleb128 0x13
+ 1397 0029 00       		.byte	0
+ 1398 002a 00       		.byte	0
+ 1399 002b 04       		.uleb128 0x4
+ 1400 002c 24       		.uleb128 0x24
+ 1401 002d 00       		.byte	0
+ 1402 002e 0B       		.uleb128 0xb
+ 1403 002f 0B       		.uleb128 0xb
+ 1404 0030 3E       		.uleb128 0x3e
+ 1405 0031 0B       		.uleb128 0xb
+ 1406 0032 03       		.uleb128 0x3
+ 1407 0033 08       		.uleb128 0x8
+ 1408 0034 00       		.byte	0
+ 1409 0035 00       		.byte	0
+ 1410 0036 05       		.uleb128 0x5
+ 1411 0037 16       		.uleb128 0x16
+ 1412 0038 00       		.byte	0
+ 1413 0039 03       		.uleb128 0x3
+ 1414 003a 0E       		.uleb128 0xe
+ 1415 003b 3A       		.uleb128 0x3a
+ 1416 003c 0B       		.uleb128 0xb
+ 1417 003d 3B       		.uleb128 0x3b
+ 1418 003e 05       		.uleb128 0x5
+ 1419 003f 49       		.uleb128 0x49
+ 1420 0040 13       		.uleb128 0x13
+ 1421 0041 00       		.byte	0
+ 1422 0042 00       		.byte	0
+ 1423 0043 06       		.uleb128 0x6
+ 1424 0044 0F       		.uleb128 0xf
+ 1425 0045 00       		.byte	0
+ 1426 0046 0B       		.uleb128 0xb
+ 1427 0047 0B       		.uleb128 0xb
+ 1428 0048 49       		.uleb128 0x49
+ 1429 0049 13       		.uleb128 0x13
+ 1430 004a 00       		.byte	0
+ 1431 004b 00       		.byte	0
+ 1432 004c 07       		.uleb128 0x7
+ 1433 004d 15       		.uleb128 0x15
+ 1434 004e 00       		.byte	0
+ 1435 004f 27       		.uleb128 0x27
+ 1436 0050 19       		.uleb128 0x19
+ 1437 0051 00       		.byte	0
+ 1438 0052 00       		.byte	0
+ 1439 0053 08       		.uleb128 0x8
+ 1440 0054 13       		.uleb128 0x13
+ 1441 0055 00       		.byte	0
+ 1442 0056 03       		.uleb128 0x3
+ 1443 0057 0E       		.uleb128 0xe
+ 1444 0058 3C       		.uleb128 0x3c
+ 1445 0059 19       		.uleb128 0x19
+ 1446 005a 00       		.byte	0
+ 1447 005b 00       		.byte	0
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 30
+
+
+ 1448 005c 09       		.uleb128 0x9
+ 1449 005d 2E       		.uleb128 0x2e
+ 1450 005e 01       		.byte	0x1
+ 1451 005f 03       		.uleb128 0x3
+ 1452 0060 0E       		.uleb128 0xe
+ 1453 0061 3A       		.uleb128 0x3a
+ 1454 0062 0B       		.uleb128 0xb
+ 1455 0063 3B       		.uleb128 0x3b
+ 1456 0064 0B       		.uleb128 0xb
+ 1457 0065 27       		.uleb128 0x27
+ 1458 0066 19       		.uleb128 0x19
+ 1459 0067 11       		.uleb128 0x11
+ 1460 0068 01       		.uleb128 0x1
+ 1461 0069 12       		.uleb128 0x12
+ 1462 006a 06       		.uleb128 0x6
+ 1463 006b 40       		.uleb128 0x40
+ 1464 006c 18       		.uleb128 0x18
+ 1465 006d 9742     		.uleb128 0x2117
+ 1466 006f 19       		.uleb128 0x19
+ 1467 0070 01       		.uleb128 0x1
+ 1468 0071 13       		.uleb128 0x13
+ 1469 0072 00       		.byte	0
+ 1470 0073 00       		.byte	0
+ 1471 0074 0A       		.uleb128 0xa
+ 1472 0075 2E       		.uleb128 0x2e
+ 1473 0076 00       		.byte	0
+ 1474 0077 3F       		.uleb128 0x3f
+ 1475 0078 19       		.uleb128 0x19
+ 1476 0079 03       		.uleb128 0x3
+ 1477 007a 0E       		.uleb128 0xe
+ 1478 007b 3A       		.uleb128 0x3a
+ 1479 007c 0B       		.uleb128 0xb
+ 1480 007d 3B       		.uleb128 0x3b
+ 1481 007e 0B       		.uleb128 0xb
+ 1482 007f 27       		.uleb128 0x27
+ 1483 0080 19       		.uleb128 0x19
+ 1484 0081 3C       		.uleb128 0x3c
+ 1485 0082 19       		.uleb128 0x19
+ 1486 0083 00       		.byte	0
+ 1487 0084 00       		.byte	0
+ 1488 0085 0B       		.uleb128 0xb
+ 1489 0086 34       		.uleb128 0x34
+ 1490 0087 00       		.byte	0
+ 1491 0088 03       		.uleb128 0x3
+ 1492 0089 0E       		.uleb128 0xe
+ 1493 008a 3A       		.uleb128 0x3a
+ 1494 008b 0B       		.uleb128 0xb
+ 1495 008c 3B       		.uleb128 0x3b
+ 1496 008d 0B       		.uleb128 0xb
+ 1497 008e 49       		.uleb128 0x49
+ 1498 008f 13       		.uleb128 0x13
+ 1499 0090 3F       		.uleb128 0x3f
+ 1500 0091 19       		.uleb128 0x19
+ 1501 0092 3C       		.uleb128 0x3c
+ 1502 0093 19       		.uleb128 0x19
+ 1503 0094 00       		.byte	0
+ 1504 0095 00       		.byte	0
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 31
+
+
+ 1505 0096 0C       		.uleb128 0xc
+ 1506 0097 01       		.uleb128 0x1
+ 1507 0098 01       		.byte	0x1
+ 1508 0099 49       		.uleb128 0x49
+ 1509 009a 13       		.uleb128 0x13
+ 1510 009b 01       		.uleb128 0x1
+ 1511 009c 13       		.uleb128 0x13
+ 1512 009d 00       		.byte	0
+ 1513 009e 00       		.byte	0
+ 1514 009f 0D       		.uleb128 0xd
+ 1515 00a0 21       		.uleb128 0x21
+ 1516 00a1 00       		.byte	0
+ 1517 00a2 00       		.byte	0
+ 1518 00a3 00       		.byte	0
+ 1519 00a4 0E       		.uleb128 0xe
+ 1520 00a5 2E       		.uleb128 0x2e
+ 1521 00a6 01       		.byte	0x1
+ 1522 00a7 3F       		.uleb128 0x3f
+ 1523 00a8 19       		.uleb128 0x19
+ 1524 00a9 03       		.uleb128 0x3
+ 1525 00aa 0E       		.uleb128 0xe
+ 1526 00ab 3A       		.uleb128 0x3a
+ 1527 00ac 0B       		.uleb128 0xb
+ 1528 00ad 3B       		.uleb128 0x3b
+ 1529 00ae 0B       		.uleb128 0xb
+ 1530 00af 8701     		.uleb128 0x87
+ 1531 00b1 19       		.uleb128 0x19
+ 1532 00b2 11       		.uleb128 0x11
+ 1533 00b3 01       		.uleb128 0x1
+ 1534 00b4 12       		.uleb128 0x12
+ 1535 00b5 06       		.uleb128 0x6
+ 1536 00b6 40       		.uleb128 0x40
+ 1537 00b7 18       		.uleb128 0x18
+ 1538 00b8 9742     		.uleb128 0x2117
+ 1539 00ba 19       		.uleb128 0x19
+ 1540 00bb 01       		.uleb128 0x1
+ 1541 00bc 13       		.uleb128 0x13
+ 1542 00bd 00       		.byte	0
+ 1543 00be 00       		.byte	0
+ 1544 00bf 0F       		.uleb128 0xf
+ 1545 00c0 898201   		.uleb128 0x4109
+ 1546 00c3 01       		.byte	0x1
+ 1547 00c4 11       		.uleb128 0x11
+ 1548 00c5 01       		.uleb128 0x1
+ 1549 00c6 31       		.uleb128 0x31
+ 1550 00c7 13       		.uleb128 0x13
+ 1551 00c8 01       		.uleb128 0x1
+ 1552 00c9 13       		.uleb128 0x13
+ 1553 00ca 00       		.byte	0
+ 1554 00cb 00       		.byte	0
+ 1555 00cc 10       		.uleb128 0x10
+ 1556 00cd 8A8201   		.uleb128 0x410a
+ 1557 00d0 00       		.byte	0
+ 1558 00d1 02       		.uleb128 0x2
+ 1559 00d2 18       		.uleb128 0x18
+ 1560 00d3 9142     		.uleb128 0x2111
+ 1561 00d5 18       		.uleb128 0x18
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 32
+
+
+ 1562 00d6 00       		.byte	0
+ 1563 00d7 00       		.byte	0
+ 1564 00d8 11       		.uleb128 0x11
+ 1565 00d9 898201   		.uleb128 0x4109
+ 1566 00dc 00       		.byte	0
+ 1567 00dd 11       		.uleb128 0x11
+ 1568 00de 01       		.uleb128 0x1
+ 1569 00df 31       		.uleb128 0x31
+ 1570 00e0 13       		.uleb128 0x13
+ 1571 00e1 00       		.byte	0
+ 1572 00e2 00       		.byte	0
+ 1573 00e3 12       		.uleb128 0x12
+ 1574 00e4 34       		.uleb128 0x34
+ 1575 00e5 00       		.byte	0
+ 1576 00e6 03       		.uleb128 0x3
+ 1577 00e7 0E       		.uleb128 0xe
+ 1578 00e8 3A       		.uleb128 0x3a
+ 1579 00e9 0B       		.uleb128 0xb
+ 1580 00ea 3B       		.uleb128 0x3b
+ 1581 00eb 0B       		.uleb128 0xb
+ 1582 00ec 49       		.uleb128 0x49
+ 1583 00ed 13       		.uleb128 0x13
+ 1584 00ee 02       		.uleb128 0x2
+ 1585 00ef 17       		.uleb128 0x17
+ 1586 00f0 00       		.byte	0
+ 1587 00f1 00       		.byte	0
+ 1588 00f2 13       		.uleb128 0x13
+ 1589 00f3 34       		.uleb128 0x34
+ 1590 00f4 00       		.byte	0
+ 1591 00f5 03       		.uleb128 0x3
+ 1592 00f6 0E       		.uleb128 0xe
+ 1593 00f7 3A       		.uleb128 0x3a
+ 1594 00f8 0B       		.uleb128 0xb
+ 1595 00f9 3B       		.uleb128 0x3b
+ 1596 00fa 0B       		.uleb128 0xb
+ 1597 00fb 49       		.uleb128 0x49
+ 1598 00fc 13       		.uleb128 0x13
+ 1599 00fd 02       		.uleb128 0x2
+ 1600 00fe 18       		.uleb128 0x18
+ 1601 00ff 00       		.byte	0
+ 1602 0100 00       		.byte	0
+ 1603 0101 14       		.uleb128 0x14
+ 1604 0102 898201   		.uleb128 0x4109
+ 1605 0105 01       		.byte	0x1
+ 1606 0106 11       		.uleb128 0x11
+ 1607 0107 01       		.uleb128 0x1
+ 1608 0108 31       		.uleb128 0x31
+ 1609 0109 13       		.uleb128 0x13
+ 1610 010a 00       		.byte	0
+ 1611 010b 00       		.byte	0
+ 1612 010c 15       		.uleb128 0x15
+ 1613 010d 2E       		.uleb128 0x2e
+ 1614 010e 01       		.byte	0x1
+ 1615 010f 3F       		.uleb128 0x3f
+ 1616 0110 19       		.uleb128 0x19
+ 1617 0111 03       		.uleb128 0x3
+ 1618 0112 0E       		.uleb128 0xe
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 33
+
+
+ 1619 0113 3A       		.uleb128 0x3a
+ 1620 0114 0B       		.uleb128 0xb
+ 1621 0115 3B       		.uleb128 0x3b
+ 1622 0116 0B       		.uleb128 0xb
+ 1623 0117 27       		.uleb128 0x27
+ 1624 0118 19       		.uleb128 0x19
+ 1625 0119 49       		.uleb128 0x49
+ 1626 011a 13       		.uleb128 0x13
+ 1627 011b 8701     		.uleb128 0x87
+ 1628 011d 19       		.uleb128 0x19
+ 1629 011e 11       		.uleb128 0x11
+ 1630 011f 01       		.uleb128 0x1
+ 1631 0120 12       		.uleb128 0x12
+ 1632 0121 06       		.uleb128 0x6
+ 1633 0122 40       		.uleb128 0x40
+ 1634 0123 18       		.uleb128 0x18
+ 1635 0124 9742     		.uleb128 0x2117
+ 1636 0126 19       		.uleb128 0x19
+ 1637 0127 01       		.uleb128 0x1
+ 1638 0128 13       		.uleb128 0x13
+ 1639 0129 00       		.byte	0
+ 1640 012a 00       		.byte	0
+ 1641 012b 16       		.uleb128 0x16
+ 1642 012c 2E       		.uleb128 0x2e
+ 1643 012d 01       		.byte	0x1
+ 1644 012e 3F       		.uleb128 0x3f
+ 1645 012f 19       		.uleb128 0x19
+ 1646 0130 03       		.uleb128 0x3
+ 1647 0131 0E       		.uleb128 0xe
+ 1648 0132 3A       		.uleb128 0x3a
+ 1649 0133 0B       		.uleb128 0xb
+ 1650 0134 3B       		.uleb128 0x3b
+ 1651 0135 0B       		.uleb128 0xb
+ 1652 0136 27       		.uleb128 0x27
+ 1653 0137 19       		.uleb128 0x19
+ 1654 0138 11       		.uleb128 0x11
+ 1655 0139 01       		.uleb128 0x1
+ 1656 013a 12       		.uleb128 0x12
+ 1657 013b 06       		.uleb128 0x6
+ 1658 013c 40       		.uleb128 0x40
+ 1659 013d 18       		.uleb128 0x18
+ 1660 013e 9742     		.uleb128 0x2117
+ 1661 0140 19       		.uleb128 0x19
+ 1662 0141 01       		.uleb128 0x1
+ 1663 0142 13       		.uleb128 0x13
+ 1664 0143 00       		.byte	0
+ 1665 0144 00       		.byte	0
+ 1666 0145 17       		.uleb128 0x17
+ 1667 0146 05       		.uleb128 0x5
+ 1668 0147 00       		.byte	0
+ 1669 0148 03       		.uleb128 0x3
+ 1670 0149 0E       		.uleb128 0xe
+ 1671 014a 3A       		.uleb128 0x3a
+ 1672 014b 0B       		.uleb128 0xb
+ 1673 014c 3B       		.uleb128 0x3b
+ 1674 014d 0B       		.uleb128 0xb
+ 1675 014e 49       		.uleb128 0x49
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 34
+
+
+ 1676 014f 13       		.uleb128 0x13
+ 1677 0150 02       		.uleb128 0x2
+ 1678 0151 17       		.uleb128 0x17
+ 1679 0152 00       		.byte	0
+ 1680 0153 00       		.byte	0
+ 1681 0154 18       		.uleb128 0x18
+ 1682 0155 34       		.uleb128 0x34
+ 1683 0156 00       		.byte	0
+ 1684 0157 03       		.uleb128 0x3
+ 1685 0158 0E       		.uleb128 0xe
+ 1686 0159 3A       		.uleb128 0x3a
+ 1687 015a 0B       		.uleb128 0xb
+ 1688 015b 3B       		.uleb128 0x3b
+ 1689 015c 05       		.uleb128 0x5
+ 1690 015d 49       		.uleb128 0x49
+ 1691 015e 13       		.uleb128 0x13
+ 1692 015f 3F       		.uleb128 0x3f
+ 1693 0160 19       		.uleb128 0x19
+ 1694 0161 3C       		.uleb128 0x3c
+ 1695 0162 19       		.uleb128 0x19
+ 1696 0163 00       		.byte	0
+ 1697 0164 00       		.byte	0
+ 1698 0165 19       		.uleb128 0x19
+ 1699 0166 35       		.uleb128 0x35
+ 1700 0167 00       		.byte	0
+ 1701 0168 49       		.uleb128 0x49
+ 1702 0169 13       		.uleb128 0x13
+ 1703 016a 00       		.byte	0
+ 1704 016b 00       		.byte	0
+ 1705 016c 1A       		.uleb128 0x1a
+ 1706 016d 34       		.uleb128 0x34
+ 1707 016e 00       		.byte	0
+ 1708 016f 03       		.uleb128 0x3
+ 1709 0170 08       		.uleb128 0x8
+ 1710 0171 3A       		.uleb128 0x3a
+ 1711 0172 0B       		.uleb128 0xb
+ 1712 0173 3B       		.uleb128 0x3b
+ 1713 0174 0B       		.uleb128 0xb
+ 1714 0175 49       		.uleb128 0x49
+ 1715 0176 13       		.uleb128 0x13
+ 1716 0177 3F       		.uleb128 0x3f
+ 1717 0178 19       		.uleb128 0x19
+ 1718 0179 02       		.uleb128 0x2
+ 1719 017a 18       		.uleb128 0x18
+ 1720 017b 00       		.byte	0
+ 1721 017c 00       		.byte	0
+ 1722 017d 1B       		.uleb128 0x1b
+ 1723 017e 34       		.uleb128 0x34
+ 1724 017f 00       		.byte	0
+ 1725 0180 03       		.uleb128 0x3
+ 1726 0181 0E       		.uleb128 0xe
+ 1727 0182 3A       		.uleb128 0x3a
+ 1728 0183 0B       		.uleb128 0xb
+ 1729 0184 3B       		.uleb128 0x3b
+ 1730 0185 0B       		.uleb128 0xb
+ 1731 0186 49       		.uleb128 0x49
+ 1732 0187 13       		.uleb128 0x13
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 35
+
+
+ 1733 0188 3F       		.uleb128 0x3f
+ 1734 0189 19       		.uleb128 0x19
+ 1735 018a 02       		.uleb128 0x2
+ 1736 018b 18       		.uleb128 0x18
+ 1737 018c 00       		.byte	0
+ 1738 018d 00       		.byte	0
+ 1739 018e 1C       		.uleb128 0x1c
+ 1740 018f 2E       		.uleb128 0x2e
+ 1741 0190 00       		.byte	0
+ 1742 0191 3F       		.uleb128 0x3f
+ 1743 0192 19       		.uleb128 0x19
+ 1744 0193 3C       		.uleb128 0x3c
+ 1745 0194 19       		.uleb128 0x19
+ 1746 0195 6E       		.uleb128 0x6e
+ 1747 0196 0E       		.uleb128 0xe
+ 1748 0197 03       		.uleb128 0x3
+ 1749 0198 0E       		.uleb128 0xe
+ 1750 0199 3A       		.uleb128 0x3a
+ 1751 019a 0B       		.uleb128 0xb
+ 1752 019b 3B       		.uleb128 0x3b
+ 1753 019c 05       		.uleb128 0x5
+ 1754 019d 00       		.byte	0
+ 1755 019e 00       		.byte	0
+ 1756 019f 1D       		.uleb128 0x1d
+ 1757 01a0 2E       		.uleb128 0x2e
+ 1758 01a1 00       		.byte	0
+ 1759 01a2 3F       		.uleb128 0x3f
+ 1760 01a3 19       		.uleb128 0x19
+ 1761 01a4 3C       		.uleb128 0x3c
+ 1762 01a5 19       		.uleb128 0x19
+ 1763 01a6 6E       		.uleb128 0x6e
+ 1764 01a7 0E       		.uleb128 0xe
+ 1765 01a8 03       		.uleb128 0x3
+ 1766 01a9 0E       		.uleb128 0xe
+ 1767 01aa 3A       		.uleb128 0x3a
+ 1768 01ab 0B       		.uleb128 0xb
+ 1769 01ac 3B       		.uleb128 0x3b
+ 1770 01ad 0B       		.uleb128 0xb
+ 1771 01ae 00       		.byte	0
+ 1772 01af 00       		.byte	0
+ 1773 01b0 00       		.byte	0
+ 1774              		.section	.debug_loc,"",%progbits
+ 1775              	.Ldebug_loc0:
+ 1776              	.LLST0:
+ 1777 0000 28000000 		.4byte	.LVL4
+ 1778 0004 2B000000 		.4byte	.LVL5-1
+ 1779 0008 0100     		.2byte	0x1
+ 1780 000a 50       		.byte	0x50
+ 1781 000b 00000000 		.4byte	0
+ 1782 000f 00000000 		.4byte	0
+ 1783              	.LLST1:
+ 1784 0013 14000000 		.4byte	.LVL8
+ 1785 0017 17000000 		.4byte	.LVL9-1
+ 1786 001b 0100     		.2byte	0x1
+ 1787 001d 50       		.byte	0x50
+ 1788 001e 00000000 		.4byte	0
+ 1789 0022 00000000 		.4byte	0
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 36
+
+
+ 1790              	.LLST2:
+ 1791 0026 00000000 		.4byte	.LVL26
+ 1792 002a 12000000 		.4byte	.LVL27
+ 1793 002e 0100     		.2byte	0x1
+ 1794 0030 50       		.byte	0x50
+ 1795 0031 12000000 		.4byte	.LVL27
+ 1796 0035 17000000 		.4byte	.LVL28-1
+ 1797 0039 0200     		.2byte	0x2
+ 1798 003b 71       		.byte	0x71
+ 1799 003c 00       		.sleb128 0
+ 1800 003d 17000000 		.4byte	.LVL28-1
+ 1801 0041 1E000000 		.4byte	.LVL29
+ 1802 0045 0200     		.2byte	0x2
+ 1803 0047 91       		.byte	0x91
+ 1804 0048 77       		.sleb128 -9
+ 1805 0049 1E000000 		.4byte	.LVL29
+ 1806 004d 24000000 		.4byte	.LFE71
+ 1807 0051 0200     		.2byte	0x2
+ 1808 0053 7D       		.byte	0x7d
+ 1809 0054 77       		.sleb128 -9
+ 1810 0055 00000000 		.4byte	0
+ 1811 0059 00000000 		.4byte	0
+ 1812              		.section	.debug_aranges,"",%progbits
+ 1813 0000 54000000 		.4byte	0x54
+ 1814 0004 0200     		.2byte	0x2
+ 1815 0006 00000000 		.4byte	.Ldebug_info0
+ 1816 000a 04       		.byte	0x4
+ 1817 000b 00       		.byte	0
+ 1818 000c 0000     		.2byte	0
+ 1819 000e 0000     		.2byte	0
+ 1820 0010 00000000 		.4byte	.LFB69
+ 1821 0014 20000000 		.4byte	.LFE69-.LFB69
+ 1822 0018 00000000 		.4byte	.LFB72
+ 1823 001c 18000000 		.4byte	.LFE72-.LFB72
+ 1824 0020 00000000 		.4byte	.LFB73
+ 1825 0024 44000000 		.4byte	.LFE73-.LFB73
+ 1826 0028 00000000 		.4byte	.LFB75
+ 1827 002c 2C000000 		.4byte	.LFE75-.LFB75
+ 1828 0030 00000000 		.4byte	.LFB74
+ 1829 0034 12000000 		.4byte	.LFE74-.LFB74
+ 1830 0038 00000000 		.4byte	.LFB68
+ 1831 003c F4000000 		.4byte	.LFE68-.LFB68
+ 1832 0040 00000000 		.4byte	.LFB70
+ 1833 0044 18000000 		.4byte	.LFE70-.LFB70
+ 1834 0048 00000000 		.4byte	.LFB71
+ 1835 004c 24000000 		.4byte	.LFE71-.LFB71
+ 1836 0050 00000000 		.4byte	0
+ 1837 0054 00000000 		.4byte	0
+ 1838              		.section	.debug_ranges,"",%progbits
+ 1839              	.Ldebug_ranges0:
+ 1840 0000 00000000 		.4byte	.LFB69
+ 1841 0004 20000000 		.4byte	.LFE69
+ 1842 0008 00000000 		.4byte	.LFB72
+ 1843 000c 18000000 		.4byte	.LFE72
+ 1844 0010 00000000 		.4byte	.LFB73
+ 1845 0014 44000000 		.4byte	.LFE73
+ 1846 0018 00000000 		.4byte	.LFB75
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 37
+
+
+ 1847 001c 2C000000 		.4byte	.LFE75
+ 1848 0020 00000000 		.4byte	.LFB74
+ 1849 0024 12000000 		.4byte	.LFE74
+ 1850 0028 00000000 		.4byte	.LFB68
+ 1851 002c F4000000 		.4byte	.LFE68
+ 1852 0030 00000000 		.4byte	.LFB70
+ 1853 0034 18000000 		.4byte	.LFE70
+ 1854 0038 00000000 		.4byte	.LFB71
+ 1855 003c 24000000 		.4byte	.LFE71
+ 1856 0040 00000000 		.4byte	0
+ 1857 0044 00000000 		.4byte	0
+ 1858              		.section	.debug_line,"",%progbits
+ 1859              	.Ldebug_line0:
+ 1860 0000 90020000 		.section	.debug_str,"MS",%progbits,1
+ 1860      0200B701 
+ 1860      00000201 
+ 1860      FB0E0D00 
+ 1860      01010101 
+ 1861              	.LASF38:
+ 1862 0000 6D656469 		.ascii	"medicineTask\000"
+ 1862      63696E65 
+ 1862      5461736B 
+ 1862      00
+ 1863              	.LASF30:
+ 1864 000d 546F6B65 		.ascii	"Token\000"
+ 1864      6E00
+ 1865              	.LASF52:
+ 1866 0013 78517565 		.ascii	"xQueueReceive\000"
+ 1866      75655265 
+ 1866      63656976 
+ 1866      6500
+ 1867              	.LASF42:
+ 1868 0021 72656C65 		.ascii	"releaseClue\000"
+ 1868      61736543 
+ 1868      6C756500 
+ 1869              	.LASF53:
+ 1870 002d 61737369 		.ascii	"assignMissionToLab\000"
+ 1870      676E4D69 
+ 1870      7373696F 
+ 1870      6E546F4C 
+ 1870      616200
+ 1871              	.LASF43:
+ 1872 0040 43795261 		.ascii	"CyRamVectors\000"
+ 1872      6D566563 
+ 1872      746F7273 
+ 1872      00
+ 1873              	.LASF35:
+ 1874 004d 76616363 		.ascii	"vaccineTask\000"
+ 1874      696E6554 
+ 1874      61736B00 
+ 1875              	.LASF2:
+ 1876 0059 73686F72 		.ascii	"short int\000"
+ 1876      7420696E 
+ 1876      7400
+ 1877              	.LASF20:
+ 1878 0063 73697A65 		.ascii	"sizetype\000"
+ 1878      74797065 
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 38
+
+
+ 1878      00
+ 1879              	.LASF32:
+ 1880 006c 78506F72 		.ascii	"xPortSysTickHandler\000"
+ 1880      74537973 
+ 1880      5469636B 
+ 1880      48616E64 
+ 1880      6C657200 
+ 1881              	.LASF57:
+ 1882 0080 76546173 		.ascii	"vTaskDelay\000"
+ 1882      6B44656C 
+ 1882      617900
+ 1883              	.LASF68:
+ 1884 008b 6D61696E 		.ascii	"main\000"
+ 1884      00
+ 1885              	.LASF7:
+ 1886 0090 5F5F7569 		.ascii	"__uint32_t\000"
+ 1886      6E743332 
+ 1886      5F7400
+ 1887              	.LASF49:
+ 1888 009b 6D656469 		.ascii	"medicineHandler\000"
+ 1888      63696E65 
+ 1888      48616E64 
+ 1888      6C657200 
+ 1889              	.LASF12:
+ 1890 00ab 75696E74 		.ascii	"uint8_t\000"
+ 1890      385F7400 
+ 1891              	.LASF34:
+ 1892 00b3 71756172 		.ascii	"quarantineTask\000"
+ 1892      616E7469 
+ 1892      6E655461 
+ 1892      736B00
+ 1893              	.LASF15:
+ 1894 00c2 75696E74 		.ascii	"uint8\000"
+ 1894      3800
+ 1895              	.LASF55:
+ 1896 00c8 78517565 		.ascii	"xQueueGenericSend\000"
+ 1896      75654765 
+ 1896      6E657269 
+ 1896      6353656E 
+ 1896      6400
+ 1897              	.LASF16:
+ 1898 00da 666C6F61 		.ascii	"float\000"
+ 1898      7400
+ 1899              	.LASF9:
+ 1900 00e0 6C6F6E67 		.ascii	"long long int\000"
+ 1900      206C6F6E 
+ 1900      6720696E 
+ 1900      7400
+ 1901              	.LASF19:
+ 1902 00ee 63796973 		.ascii	"cyisraddress\000"
+ 1902      72616464 
+ 1902      72657373 
+ 1902      00
+ 1903              	.LASF39:
+ 1904 00fb 6D656469 		.ascii	"medicine\000"
+ 1904      63696E65 
+ 1904      00
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 39
+
+
+ 1905              	.LASF62:
+ 1906 0104 78517565 		.ascii	"xQueueCreateMutex\000"
+ 1906      75654372 
+ 1906      65617465 
+ 1906      4D757465 
+ 1906      7800
+ 1907              	.LASF63:
+ 1908 0116 76546173 		.ascii	"vTaskStartScheduler\000"
+ 1908      6B537461 
+ 1908      72745363 
+ 1908      68656475 
+ 1908      6C657200 
+ 1909              	.LASF6:
+ 1910 012a 6C6F6E67 		.ascii	"long int\000"
+ 1910      20696E74 
+ 1910      00
+ 1911              	.LASF22:
+ 1912 0133 42617365 		.ascii	"BaseType_t\000"
+ 1912      54797065 
+ 1912      5F7400
+ 1913              	.LASF27:
+ 1914 013e 74736B54 		.ascii	"tskTaskControlBlock\000"
+ 1914      61736B43 
+ 1914      6F6E7472 
+ 1914      6F6C426C 
+ 1914      6F636B00 
+ 1915              	.LASF48:
+ 1916 0152 73637265 		.ascii	"screenUpdateHandler\000"
+ 1916      656E5570 
+ 1916      64617465 
+ 1916      48616E64 
+ 1916      6C657200 
+ 1917              	.LASF26:
+ 1918 0166 51756575 		.ascii	"QueueHandle_t\000"
+ 1918      6548616E 
+ 1918      646C655F 
+ 1918      7400
+ 1919              	.LASF1:
+ 1920 0174 756E7369 		.ascii	"unsigned char\000"
+ 1920      676E6564 
+ 1920      20636861 
+ 1920      7200
+ 1921              	.LASF58:
+ 1922 0182 4C43445F 		.ascii	"LCD_Start\000"
+ 1922      53746172 
+ 1922      7400
+ 1923              	.LASF37:
+ 1924 018c 636C7565 		.ascii	"clue\000"
+ 1924      00
+ 1925              	.LASF21:
+ 1926 0191 6C6F6E67 		.ascii	"long double\000"
+ 1926      20646F75 
+ 1926      626C6500 
+ 1927              	.LASF61:
+ 1928 019d 78517565 		.ascii	"xQueueGenericCreate\000"
+ 1928      75654765 
+ 1928      6E657269 
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 40
+
+
+ 1928      63437265 
+ 1928      61746500 
+ 1929              	.LASF29:
+ 1930 01b1 53656D61 		.ascii	"SemaphoreHandle_t\000"
+ 1930      70686F72 
+ 1930      6548616E 
+ 1930      646C655F 
+ 1930      7400
+ 1931              	.LASF33:
+ 1932 01c3 76506F72 		.ascii	"vPortSVCHandler\000"
+ 1932      74535643 
+ 1932      48616E64 
+ 1932      6C657200 
+ 1933              	.LASF0:
+ 1934 01d3 7369676E 		.ascii	"signed char\000"
+ 1934      65642063 
+ 1934      68617200 
+ 1935              	.LASF10:
+ 1936 01df 6C6F6E67 		.ascii	"long long unsigned int\000"
+ 1936      206C6F6E 
+ 1936      6720756E 
+ 1936      7369676E 
+ 1936      65642069 
+ 1937              	.LASF14:
+ 1938 01f6 75696E74 		.ascii	"uint32_t\000"
+ 1938      33325F74 
+ 1938      00
+ 1939              	.LASF25:
+ 1940 01ff 5461736B 		.ascii	"TaskHandle_t\000"
+ 1940      48616E64 
+ 1940      6C655F74 
+ 1940      00
+ 1941              	.LASF11:
+ 1942 020c 756E7369 		.ascii	"unsigned int\000"
+ 1942      676E6564 
+ 1942      20696E74 
+ 1942      00
+ 1943              	.LASF54:
+ 1944 0219 73686970 		.ascii	"shipVaccine\000"
+ 1944      56616363 
+ 1944      696E6500 
+ 1945              	.LASF50:
+ 1946 0225 78517565 		.ascii	"xQueueSemaphoreTake\000"
+ 1946      75655365 
+ 1946      6D617068 
+ 1946      6F726554 
+ 1946      616B6500 
+ 1947              	.LASF41:
+ 1948 0239 72656C65 		.ascii	"releaseContamination\000"
+ 1948      61736543 
+ 1948      6F6E7461 
+ 1948      6D696E61 
+ 1948      74696F6E 
+ 1949              	.LASF24:
+ 1950 024e 5469636B 		.ascii	"TickType_t\000"
+ 1950      54797065 
+ 1950      5F7400
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 41
+
+
+ 1951              	.LASF51:
+ 1952 0259 71756172 		.ascii	"quarantine\000"
+ 1952      616E7469 
+ 1952      6E6500
+ 1953              	.LASF28:
+ 1954 0264 51756575 		.ascii	"QueueDefinition\000"
+ 1954      65446566 
+ 1954      696E6974 
+ 1954      696F6E00 
+ 1955              	.LASF3:
+ 1956 0274 73686F72 		.ascii	"short unsigned int\000"
+ 1956      7420756E 
+ 1956      7369676E 
+ 1956      65642069 
+ 1956      6E7400
+ 1957              	.LASF18:
+ 1958 0287 63686172 		.ascii	"char\000"
+ 1958      00
+ 1959              	.LASF13:
+ 1960 028c 696E7433 		.ascii	"int32_t\000"
+ 1960      325F7400 
+ 1961              	.LASF31:
+ 1962 0294 78506F72 		.ascii	"xPortPendSVHandler\000"
+ 1962      7450656E 
+ 1962      64535648 
+ 1962      616E646C 
+ 1962      657200
+ 1963              	.LASF45:
+ 1964 02a7 67616D65 		.ascii	"gameHandler\000"
+ 1964      48616E64 
+ 1964      6C657200 
+ 1965              	.LASF60:
+ 1966 02b3 78546173 		.ascii	"xTaskCreate\000"
+ 1966      6B437265 
+ 1966      61746500 
+ 1967              	.LASF65:
+ 1968 02bf 6D61696E 		.ascii	"main.c\000"
+ 1968      2E6300
+ 1969              	.LASF8:
+ 1970 02c6 6C6F6E67 		.ascii	"long unsigned int\000"
+ 1970      20756E73 
+ 1970      69676E65 
+ 1970      6420696E 
+ 1970      7400
+ 1971              	.LASF23:
+ 1972 02d8 55426173 		.ascii	"UBaseType_t\000"
+ 1972      65547970 
+ 1972      655F7400 
+ 1973              	.LASF5:
+ 1974 02e4 5F5F696E 		.ascii	"__int32_t\000"
+ 1974      7433325F 
+ 1974      7400
+ 1975              	.LASF40:
+ 1976 02ee 73637265 		.ascii	"screenUpdateTask\000"
+ 1976      656E5570 
+ 1976      64617465 
+ 1976      5461736B 
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 42
+
+
+ 1976      00
+ 1977              	.LASF46:
+ 1978 02ff 71756172 		.ascii	"quarantineHandler\000"
+ 1978      616E7469 
+ 1978      6E654861 
+ 1978      6E646C65 
+ 1978      7200
+ 1979              	.LASF36:
+ 1980 0311 76616363 		.ascii	"vaccine\000"
+ 1980      696E6500 
+ 1981              	.LASF56:
+ 1982 0319 4C43445F 		.ascii	"LCD_Position\000"
+ 1982      506F7369 
+ 1982      74696F6E 
+ 1982      00
+ 1983              	.LASF17:
+ 1984 0326 646F7562 		.ascii	"double\000"
+ 1984      6C6500
+ 1985              	.LASF66:
+ 1986 032d 433A5C55 		.ascii	"C:\\Users\\IEUser\\Downloads\\Project assignment-20"
+ 1986      73657273 
+ 1986      5C494555 
+ 1986      7365725C 
+ 1986      446F776E 
+ 1987 035c 32303033 		.ascii	"200331\\ELECH410-201920_proj_resources\\project_pan"
+ 1987      33315C45 
+ 1987      4C454348 
+ 1987      3431302D 
+ 1987      32303139 
+ 1988 038d 64656D69 		.ascii	"demic_empty\\pandemic.cydsn\000"
+ 1988      635F656D 
+ 1988      7074795C 
+ 1988      70616E64 
+ 1988      656D6963 
+ 1989              	.LASF44:
+ 1990 03a8 49544D5F 		.ascii	"ITM_RxBuffer\000"
+ 1990      52784275 
+ 1990      66666572 
+ 1990      00
+ 1991              	.LASF64:
+ 1992 03b5 474E5520 		.ascii	"GNU C11 5.4.1 20160609 (release) [ARM/embedded-5-br"
+ 1992      43313120 
+ 1992      352E342E 
+ 1992      31203230 
+ 1992      31363036 
+ 1993 03e8 616E6368 		.ascii	"anch revision 237715] -mcpu=cortex-m3 -mthumb -g -O"
+ 1993      20726576 
+ 1993      6973696F 
+ 1993      6E203233 
+ 1993      37373135 
+ 1994 041b 67202D66 		.ascii	"g -ffunction-sections -ffat-lto-objects\000"
+ 1994      66756E63 
+ 1994      74696F6E 
+ 1994      2D736563 
+ 1994      74696F6E 
+ 1995              	.LASF59:
+ 1996 0443 4B425F53 		.ascii	"KB_Start\000"
+ARM GAS  C:\Users\IEUser\AppData\Local\Temp\ccF4j6lt.s 			page 43
+
+
+ 1996      74617274 
+ 1996      00
+ 1997              	.LASF67:
+ 1998 044c 66726565 		.ascii	"freeRTOSInit\000"
+ 1998      52544F53 
+ 1998      496E6974 
+ 1998      00
+ 1999              	.LASF4:
+ 2000 0459 5F5F7569 		.ascii	"__uint8_t\000"
+ 2000      6E74385F 
+ 2000      7400
+ 2001              	.LASF47:
+ 2002 0463 76616363 		.ascii	"vaccineHandler\000"
+ 2002      696E6548 
+ 2002      616E646C 
+ 2002      657200
+ 2003              		.ident	"GCC: (GNU Tools for ARM Embedded Processors) 5.4.1 20160609 (release) [ARM/embedded-5-bran
