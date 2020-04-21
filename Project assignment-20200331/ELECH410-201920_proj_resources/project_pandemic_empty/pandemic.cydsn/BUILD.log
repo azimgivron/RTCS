@@ -1,4 +1,4 @@
---------------- Build Started: 04/21/2020 02:01:41 Project: pandemic, Configuration: ARM GCC 5.4-2016-q2-update Debug ---------------
+--------------- Build Started: 04/21/2020 03:39:53 Project: pandemic, Configuration: ARM GCC 5.4-2016-q2-update Debug ---------------
 The code generation step is up to date.
 arm-none-eabi-gcc.exe -mcpu=cortex-m3 -mthumb -I.\FreeRTOS\include -I. -IGenerated_Source\PSoC5 -Wa,-alh=.\CortexM3\ARM_GCC_541\Debug/main.lst -g -D DEBUG -D CY_CORE_ID=0 -Wall -ffunction-sections -ffat-lto-objects -Og -c main.c -o .\CortexM3\ARM_GCC_541\Debug\main.o
 arm-none-eabi-ar.exe -rs .\CortexM3\ARM_GCC_541\Debug\pandemic.a .\CortexM3\ARM_GCC_541\Debug\LED1.o .\CortexM3\ARM_GCC_541\Debug\SW1.o .\CortexM3\ARM_GCC_541\Debug\SW2.o .\CortexM3\ARM_GCC_541\Debug\SW3.o .\CortexM3\ARM_GCC_541\Debug\SW4.o .\CortexM3\ARM_GCC_541\Debug\LED2.o .\CortexM3\ARM_GCC_541\Debug\LED3.o .\CortexM3\ARM_GCC_541\Debug\LED4.o .\CortexM3\ARM_GCC_541\Debug\GPIOJ11.o .\CortexM3\ARM_GCC_541\Debug\GPIOJ12.o .\CortexM3\ARM_GCC_541\Debug\GPIOJ13.o .\CortexM3\ARM_GCC_541\Debug\GPIOJ14.o .\CortexM3\ARM_GCC_541\Debug\KB_keyboard.o .\CortexM3\ARM_GCC_541\Debug\LCD.o .\CortexM3\ARM_GCC_541\Debug\LCD_PM.o .\CortexM3\ARM_GCC_541\Debug\KB_KeyboardCol1.o .\CortexM3\ARM_GCC_541\Debug\KB_KeyboardCol3.o .\CortexM3\ARM_GCC_541\Debug\KB_KeyboardCol2.o .\CortexM3\ARM_GCC_541\Debug\KB_KeyboardRow0.o .\CortexM3\ARM_GCC_541\Debug\KB_KeyboardRow1.o .\CortexM3\ARM_GCC_541\Debug\KB_KeyboardRow2.o .\CortexM3\ARM_GCC_541\Debug\KB_KeyboardRow3.o .\CortexM3\ARM_GCC_541\Debug\LCD_LCDPort.o .\CortexM3\ARM_GCC_541\Debug\CyDmac.o .\CortexM3\ARM_GCC_541\Debug\CyFlash.o .\CortexM3\ARM_GCC_541\Debug\CyLib.o .\CortexM3\ARM_GCC_541\Debug\cyPm.o .\CortexM3\ARM_GCC_541\Debug\CySpc.o .\CortexM3\ARM_GCC_541\Debug\cyutils.o .\CortexM3\ARM_GCC_541\Debug\cy_em_eeprom.o .\CortexM3\ARM_GCC_541\Debug\CyBootAsmGnu.o
@@ -9,6 +9,6 @@ No ELF section .cychecksum found, creating one
 Application checksum calculated and stored in ELF section .cychecksum
 Checksum calculated and stored in ELF section .cymeta
 cyelftool.exe -S "C:\Users\IEUser\Desktop\RTCS\Project assignment-20200331\ELECH410-201920_proj_resources\project_pandemic_empty\pandemic.cydsn\CortexM3\ARM_GCC_541\Debug\pandemic.elf"
-Flash used: 9992 of 262144 bytes (3.8%).
-SRAM used: 36329 of 65536 bytes (55.4%). Stack: 2048 bytes. Heap: 128 bytes.
---------------- Build Succeeded: 04/21/2020 02:01:47 ---------------
+Flash used: 10520 of 262144 bytes (4.0%).
+SRAM used: 36337 of 65536 bytes (55.4%). Stack: 2048 bytes. Heap: 128 bytes.
+--------------- Build Succeeded: 04/21/2020 03:39:58 ---------------

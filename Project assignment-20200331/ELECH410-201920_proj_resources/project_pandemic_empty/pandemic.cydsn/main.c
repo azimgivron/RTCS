@@ -27,12 +27,18 @@
 #define SCREEN_UPDATE_TASK_NAME ("screen_update_task")
 #define MEDICINE_TASK_NAME ("medicine_task")
 
+/* Task priority */
 #define GAME_PRIORITY (20)
-#define QUARANTINE_PRIORITY (13)
+#define QUARANTINE_PRIORITY (18)
+#define SCREEN_UPDATE_PRIORITY (16)
+#define MEDICINE_PRIORITY (14)
 #define VACCINE_PRIORITY (12)
-#define SCREEN_UPDATE_PRIORITY (11)
-#define MEDICINE_PRIORITY (10)
 
+/* Task period */
+#define MEDICINE_TASK_PERIOD (5000)   
+
+/* Timer definitions */
+#define MEDICINE_TIMER_NAME ("medicine_timer_task")   
 
 /* Semaphore */
 SemaphoreHandle_t s1, s2;
@@ -41,6 +47,8 @@ QueueHandle_t q;
 /* Task handlers */
 TaskHandle_t gameHandler, quarantineHandler, vaccineHandler,
 screenUpdateHandler, medicineHandler;
+
+TimerHandle_t medecineTimerHandler;
 
 /*
  * Installs the RTOS interrupt handlers.
@@ -52,6 +60,12 @@ void quarantineTask();
 void vaccineTask();
 void screenUpdateTask();
 void medicineTask();
+void printCounter(char* numberAsChar, uint8_t lowerBound, uint8_t charNbr);
+void convertPercentage(uint8_t number, char* numberAsChar);
+void medicineTimerCallback();
+
+
+uint8_t md=0;
 
 int main(void)
 {
@@ -70,6 +84,8 @@ int main(void)
     xTaskCreate( vaccineTask, VACCINE_TASK_NAME, TASK_STACK_SIZE, NULL, VACCINE_PRIORITY, &vaccineHandler );
     xTaskCreate( screenUpdateTask, SCREEN_UPDATE_TASK_NAME, TASK_STACK_SIZE, NULL, SCREEN_UPDATE_PRIORITY, &screenUpdateHandler );
     xTaskCreate( medicineTask, MEDICINE_TASK_NAME, TASK_STACK_SIZE, NULL, MEDICINE_PRIORITY, &medicineHandler );
+    
+    medecineTimerHandler = xTimerCreate(MEDICINE_TIMER_NAME, MEDICINE_TASK_PERIOD, pdTRUE, NULL, medicineTimerCallback);
     
     s1 = xSemaphoreCreateBinary();
     s2 = xSemaphoreCreateMutex();
@@ -101,7 +117,8 @@ void freeRTOSInit( void )
  * When a contamination occurs gameTask calls this function.
  * 
  */
-void releaseContamination( void ){
+void releaseContamination( void )
+{
     xSemaphoreGive(s1);
 }
 
@@ -109,7 +126,8 @@ void releaseContamination( void ){
  * When gameTask releases a vaccine clue it calls this function.
  * 
  */
-void releaseClue( Token clue ){
+void releaseClue( Token clue )
+{
     xQueueSendToBack(q, (void*)&clue, portMAX_DELAY);
 }
 
@@ -117,7 +135,8 @@ void releaseClue( Token clue ){
  * 
  * 
  */
-void quarantineTask(){
+void quarantineTask()
+{
     for(;;)
     {
         xSemaphoreTake(s1, portMAX_DELAY);
@@ -129,22 +148,76 @@ void quarantineTask(){
  * 
  * 
  */
-void vaccineTask(){
+void vaccineTask()
+{
     Token vaccine, clue;
     for(;;)
     {
         xQueueReceive(q, (void*)&clue, portMAX_DELAY);
         xSemaphoreTake(s2, portMAX_DELAY);
         vaccine = assignMissionToLab(clue);
-        shipVaccine(vaccine); 
         xSemaphoreGive(s2);
+        shipVaccine(vaccine); 
     }
 }
 
-void printCounter(char* numberAsChar, uint8_t lowerBound, uint8_t upperBound)
+/*
+ * 
+ * 
+ */
+void screenUpdateTask()
 {
-    uint8_t i, diff=upperBound-lowerBound, startAtZero=(diff==2)?0:1;
-    for(i=0 ; i<diff+1; i++)
+    char numberAsChar[3];
+    uint8_t charNbr, lowerBound, cntr;
+    for(;;)
+    {
+        //init.
+        lowerBound=0;
+        
+        //print population cntr
+        cntr = getPopulationCntr();
+        convertPercentage(cntr, numberAsChar); //convert int to char
+        charNbr = (cntr==100)? 2u : 1u; //cntr on 3 or 2 char?
+        printCounter(numberAsChar, lowerBound, charNbr); //print cntr
+       
+        //put space
+        lowerBound+=charNbr+1;
+        LCD_Position(0u, lowerBound);
+        LCD_PutChar(' ');
+        
+        //print vaccine cntr
+        lowerBound++;
+        cntr = getVaccineCntr();
+        convertPercentage(cntr, numberAsChar);
+        charNbr = (cntr==100)? 2u : 1u;
+        printCounter(numberAsChar, lowerBound, charNbr);
+        
+        //put space
+        lowerBound+=charNbr+1;
+        LCD_Position(0u, lowerBound);
+        LCD_PutChar(' ');
+        
+        //print medecine cntr
+        lowerBound++;
+        cntr = md;
+        convertPercentage(cntr, numberAsChar);
+        charNbr = (cntr==100)? 2u : 1u;
+        printCounter(numberAsChar, lowerBound, charNbr);
+        
+        //put space
+        lowerBound+=charNbr+1;
+        LCD_Position(0u, lowerBound);
+        LCD_PutChar(' ');
+        
+        //LCD_PutChar(getPopulationCntr());
+        vTaskDelay(200u);
+    }
+}
+
+void printCounter(char* numberAsChar, uint8_t lowerBound, uint8_t charNbr)
+{
+    uint8_t i, startAtZero=(charNbr==2)?0:1;
+    for(i=0 ; i<charNbr+1; i++)
     {
         LCD_Position(0u, lowerBound+i);
         LCD_PutChar(numberAsChar[i+startAtZero]);
@@ -162,58 +235,28 @@ void convertPercentage(uint8_t number, char* numberAsChar)
  * 
  * 
  */
-void screenUpdateTask(){
-    char numberAsChar[3];
-    uint8_t upperBound, lowerBound, cntr;
-    for(;;)
-    {
-        //init.
-        lowerBound=0;
-        
-        cntr = getPopulationCntr();
-        convertPercentage(cntr, numberAsChar); //convert int to char
-        upperBound = (cntr==100)? 2u : 1u; //cntr on 3 or 2 char?
-        printCounter(numberAsChar, lowerBound, upperBound); //print cntr
-       
-        //put space
-        upperBound++;
-        LCD_Position(0u, upperBound);
-        LCD_PutChar(' ');
-        
-        //print second cntr
-        upperBound++;
-        cntr = getVaccineCntr();
-        convertPercentage(cntr, numberAsChar);
-        lowerBound = upperBound;
-        upperBound += (cntr==100)? 2u : 1u;
-        printCounter(numberAsChar, lowerBound, upperBound);
-        
-        //put space
-        upperBound++;
-        LCD_Position(0u, upperBound);
-        LCD_PutChar(' ');
-        
-        //LCD_PutChar(getPopulationCntr());
-        vTaskDelay(200u);
-    }
-}
-
-/*
- * 
- * 
- */
-void medicineTask(){
+void medicineTask()
+{
     Token medicine;
+    uint8_t i;
     for(;;)
     {
-        xSemaphoreTake(s2, portMAX_DELAY);
-        medicine = assignMissionToLab(0);
-        shipVaccine(medicine); 
-        xSemaphoreGive(s2);
+        for(i=0; i<2; i++)
+        {
+            xSemaphoreTake(s2, portMAX_DELAY);
+            medicine = assignMissionToLab(0);
+            xSemaphoreGive(s2);
+            shipVaccine(medicine);
+            md++;
+        }
+        vTaskSuspend(medicineHandler);
     }
 }
 
-
+void medicineTimerCallback()
+{
+    vTaskResume(medicineHandler);
+}
 
 
 /* [] END OF FILE */
