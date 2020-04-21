@@ -250,14 +250,16 @@
 </userData>
 </CyGuid_fdba8dfd-b15b-4469-9bbb-9e40c3e70997>
 <Unloaded />
-<OpenDocs />
+<OpenDocs>
+<name v=".\main.c" />
+</OpenDocs>
 <OpenDocsLayout><![CDATA[<?xml version="1.0"?><!--
 
   Actipro Docking/MDI for WinForms
   Copyright (c) 2001-2016 Actipro Software LLC.  All rights reserved.
   http://www.actiprosoftware.com
 
---><DocumentLayout Version="1.0"><LayoutData><TabbedMdiRootContainer Orientation="Horizontal"><TabbedMdiContainer Size="994, 407" SelectedTabbedMdiWindow="5b4d74ad-d446-4896-bc3d-6bac90186afd"><ToolWindow Key="Start Page:bd4649ab-da6b-4d04-a663-c722b8bf99db:Start Page" Guid="5b4d74ad-d446-4896-bc3d-6bac90186afd" /></TabbedMdiContainer></TabbedMdiRootContainer><FloatingContainers /></LayoutData></DocumentLayout>]]></OpenDocsLayout>
+--><DocumentLayout Version="1.0"><LayoutData><TabbedMdiRootContainer Orientation="Horizontal"><TabbedMdiContainer Size="799, 407" SelectedTabbedMdiWindow="ffa3bb5e-e795-4cda-85ac-a6ceabf42d3f"><ToolWindow Key="Start Page:bd4649ab-da6b-4d04-a663-c722b8bf99db:Start Page" Guid="5b4d74ad-d446-4896-bc3d-6bac90186afd" /><DocumentWindow Key="C:\Users\IEUser\Desktop\RTCS\Project assignment-20200331\ELECH410-201920_proj_resources\project_pandemic_empty\pandemic.cydsn\main.c" Guid="ffa3bb5e-e795-4cda-85ac-a6ceabf42d3f" /></TabbedMdiContainer></TabbedMdiRootContainer><FloatingContainers /></LayoutData></DocumentLayout>]]></OpenDocsLayout>
 <config v="" />
 <AutoUpdate v="true" />
 </CyGuid_843a90a4-0c4b-4e44-991d-05e7fb117a21>

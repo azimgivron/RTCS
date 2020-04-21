@@ -152,7 +152,7 @@ void vaccineTask()
         xSemaphoreTake(s2, portMAX_DELAY);
         vaccine = assignMissionToLab(clue);
         xSemaphoreGive(s2);
-        shipVaccine(vaccine); 
+        shipVaccine(vaccine);
     }
 }
 
@@ -194,7 +194,7 @@ void screenUpdateTask()
         
         //print medecine cntr
         lowerBound++;
-        cntr = md;
+        cntr = getMedicineCntr();
         convertPercentage(cntr, numberAsChar);
         charNbr = (cntr==100)? 2u : 1u;
         printCounter(numberAsChar, lowerBound, charNbr);
@@ -239,7 +239,6 @@ void medicineTask()
         medicine = assignMissionToLab(0);
         xSemaphoreGive(s2);
         shipMedicine(medicine);
-        md++;
     }
 }
 

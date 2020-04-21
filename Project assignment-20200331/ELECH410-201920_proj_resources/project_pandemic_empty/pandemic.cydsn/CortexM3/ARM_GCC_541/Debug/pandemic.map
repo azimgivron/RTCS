@@ -432,9 +432,8 @@ Discarded input sections
                 0x00000000        0x4 .\CortexM3\ARM_GCC_541\Debug\heap_2.o
  .text          0x00000000        0x0 .\CortexM3\ARM_GCC_541\Debug\main.o
  .data          0x00000000        0x0 .\CortexM3\ARM_GCC_541\Debug\main.o
+ .bss           0x00000000        0x1 .\CortexM3\ARM_GCC_541\Debug\main.o
  .text          0x00000000        0x0 .\CortexM3\ARM_GCC_541\Debug\pandemic.o
- .text.getMedicineCntr
-                0x00000000        0xc .\CortexM3\ARM_GCC_541\Debug\pandemic.o
  .text          0x00000000        0x0 .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
  .data          0x00000000        0x0 .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
  .bss           0x00000000        0x0 .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
@@ -959,7 +958,7 @@ END GROUP
                 0x00000800                ee_size = (CY_APPL_LOADABLE && ! (CY_EE_IN_BTLDR))?(CY_EE_SIZE / CY_APPL_MAX):CY_EE_SIZE
                 [!provide]                PROVIDE (CY_ECC_OFFSET, ecc_offset)
 
-.text           0x00000000     0x25ec
+.text           0x00000000     0x25e4
  CREATE_OBJECT_SYMBOLS
                 0x00000000                PROVIDE (__cy_interrupt_vector, RomVectors)
  *(.romvectors)
@@ -1186,265 +1185,267 @@ END GROUP
                 0x00001838       0x48 .\CortexM3\ARM_GCC_541\Debug\main.o
                 0x00001838                vaccineTask
  .text.medicineTask
-                0x00001880       0x3c .\CortexM3\ARM_GCC_541\Debug\main.o
+                0x00001880       0x30 .\CortexM3\ARM_GCC_541\Debug\main.o
                 0x00001880                medicineTask
- .text.main     0x000018bc       0xf4 .\CortexM3\ARM_GCC_541\Debug\main.o
-                0x000018bc                main
+ .text.main     0x000018b0       0xf4 .\CortexM3\ARM_GCC_541\Debug\main.o
+                0x000018b0                main
  .text.releaseContamination
-                0x000019b0       0x18 .\CortexM3\ARM_GCC_541\Debug\main.o
-                0x000019b0                releaseContamination
+                0x000019a4       0x18 .\CortexM3\ARM_GCC_541\Debug\main.o
+                0x000019a4                releaseContamination
  .text.releaseClue
-                0x000019c8       0x24 .\CortexM3\ARM_GCC_541\Debug\main.o
-                0x000019c8                releaseClue
+                0x000019bc       0x24 .\CortexM3\ARM_GCC_541\Debug\main.o
+                0x000019bc                releaseClue
  .text.printCounter
-                0x000019ec       0x38 .\CortexM3\ARM_GCC_541\Debug\main.o
-                0x000019ec                printCounter
+                0x000019e0       0x38 .\CortexM3\ARM_GCC_541\Debug\main.o
+                0x000019e0                printCounter
  .text.convertPercentage
-                0x00001a24       0x44 .\CortexM3\ARM_GCC_541\Debug\main.o
-                0x00001a24                convertPercentage
+                0x00001a18       0x44 .\CortexM3\ARM_GCC_541\Debug\main.o
+                0x00001a18                convertPercentage
  .text.screenUpdateTask
-                0x00001a68       0xac .\CortexM3\ARM_GCC_541\Debug\main.o
-                0x00001a68                screenUpdateTask
+                0x00001a5c       0xa8 .\CortexM3\ARM_GCC_541\Debug\main.o
+                0x00001a5c                screenUpdateTask
  .text.deadlineContamination
-                0x00001b14       0x2c .\CortexM3\ARM_GCC_541\Debug\pandemic.o
-                0x00001b14                deadlineContamination
+                0x00001b04       0x2c .\CortexM3\ARM_GCC_541\Debug\pandemic.o
+                0x00001b04                deadlineContamination
  .text.quarantine
-                0x00001b40       0x2c .\CortexM3\ARM_GCC_541\Debug\pandemic.o
-                0x00001b40                quarantine
+                0x00001b30       0x2c .\CortexM3\ARM_GCC_541\Debug\pandemic.o
+                0x00001b30                quarantine
  .text.shipMedicine
-                0x00001b6c       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.o
-                0x00001b6c                shipMedicine
+                0x00001b5c       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.o
+                0x00001b5c                shipMedicine
  .text.startContamination
-                0x00001b84       0x68 .\CortexM3\ARM_GCC_541\Debug\pandemic.o
-                0x00001b84                startContamination
+                0x00001b74       0x68 .\CortexM3\ARM_GCC_541\Debug\pandemic.o
+                0x00001b74                startContamination
  .text.gameTask
-                0x00001bec      0x124 .\CortexM3\ARM_GCC_541\Debug\pandemic.o
-                0x00001bec                gameTask
+                0x00001bdc      0x124 .\CortexM3\ARM_GCC_541\Debug\pandemic.o
+                0x00001bdc                gameTask
  .text.getPopulationCntr
-                0x00001d10        0xc .\CortexM3\ARM_GCC_541\Debug\pandemic.o
-                0x00001d10                getPopulationCntr
+                0x00001d00        0xc .\CortexM3\ARM_GCC_541\Debug\pandemic.o
+                0x00001d00                getPopulationCntr
+ .text.getMedicineCntr
+                0x00001d0c        0xc .\CortexM3\ARM_GCC_541\Debug\pandemic.o
+                0x00001d0c                getMedicineCntr
  .text.getVaccineCntr
-                0x00001d1c        0xc .\CortexM3\ARM_GCC_541\Debug\pandemic.o
-                0x00001d1c                getVaccineCntr
- .text.encode   0x00001d28        0x8 .\CortexM3\ARM_GCC_541\Debug\pandemic.o
-                0x00001d28                encode
+                0x00001d18        0xc .\CortexM3\ARM_GCC_541\Debug\pandemic.o
+                0x00001d18                getVaccineCntr
+ .text.encode   0x00001d24        0x8 .\CortexM3\ARM_GCC_541\Debug\pandemic.o
+                0x00001d24                encode
  .text.assignMissionToLab
-                0x00001d30       0x3c .\CortexM3\ARM_GCC_541\Debug\pandemic.o
-                0x00001d30                assignMissionToLab
+                0x00001d2c       0x3c .\CortexM3\ARM_GCC_541\Debug\pandemic.o
+                0x00001d2c                assignMissionToLab
  .text.shipVaccine
-                0x00001d6c       0x24 .\CortexM3\ARM_GCC_541\Debug\pandemic.o
-                0x00001d6c                shipVaccine
+                0x00001d68       0x24 .\CortexM3\ARM_GCC_541\Debug\pandemic.o
+                0x00001d68                shipVaccine
  .text.CyClockStartupError
-                0x00001d90        0x4 .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
+                0x00001d8c        0x4 .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
  .text.AnalogSetDefault
-                0x00001d94       0x28 .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
+                0x00001d90       0x28 .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
  .text.CYMEMZERO
-                0x00001dbc        0xc .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
+                0x00001db8        0xc .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
  .text.ClockSetup
-                0x00001dc8       0x9c .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
+                0x00001dc4       0x9c .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
  .text.CYCONFIGCPY
-                0x00001e64        0x8 .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
+                0x00001e60        0x8 .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
  .text.cyfitter_cfg
-                0x00001e6c       0xfc .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
-                0x00001e6c                cyfitter_cfg
+                0x00001e68       0xfc .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
+                0x00001e68                cyfitter_cfg
  .text.IntDefaultHandler
-                0x00001f68       0x10 .\CortexM3\ARM_GCC_541\Debug\Cm3Start.o
-                0x00001f68                IntDefaultHandler
- .text._sbrk    0x00001f78       0x30 .\CortexM3\ARM_GCC_541\Debug\Cm3Start.o
-                0x00001f78                _sbrk
- .text.Start_c  0x00001fa8       0x4c .\CortexM3\ARM_GCC_541\Debug\Cm3Start.o
-                0x00001fa8                Start_c
+                0x00001f64       0x10 .\CortexM3\ARM_GCC_541\Debug\Cm3Start.o
+                0x00001f64                IntDefaultHandler
+ .text._sbrk    0x00001f74       0x30 .\CortexM3\ARM_GCC_541\Debug\Cm3Start.o
+                0x00001f74                _sbrk
+ .text.Start_c  0x00001fa4       0x4c .\CortexM3\ARM_GCC_541\Debug\Cm3Start.o
+                0x00001fa4                Start_c
  .text.initialize_psoc
-                0x00001ff4       0x68 .\CortexM3\ARM_GCC_541\Debug\Cm3Start.o
-                0x00001ff4                initialize_psoc
+                0x00001ff0       0x68 .\CortexM3\ARM_GCC_541\Debug\Cm3Start.o
+                0x00001ff0                initialize_psoc
  .text.LED1_Write
-                0x0000205c       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED1.o)
-                0x0000205c                LED1_Write
+                0x00002058       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED1.o)
+                0x00002058                LED1_Write
  .text.LED2_Write
-                0x00002074       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED2.o)
-                0x00002074                LED2_Write
+                0x00002070       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED2.o)
+                0x00002070                LED2_Write
  .text.LED3_Write
-                0x0000208c       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED3.o)
-                0x0000208c                LED3_Write
+                0x00002088       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED3.o)
+                0x00002088                LED3_Write
  .text.LED4_Write
-                0x000020a4       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED4.o)
-                0x000020a4                LED4_Write
+                0x000020a0       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED4.o)
+                0x000020a0                LED4_Write
  .text.KB_Start
-                0x000020bc       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_keyboard.o)
-                0x000020bc                KB_Start
+                0x000020b8       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_keyboard.o)
+                0x000020b8                KB_Start
  .text.LCD_WrCntrlNib
-                0x000020d4       0x34 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
+                0x000020d0       0x34 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
  .text.LCD_WrDatNib
-                0x00002108       0x44 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
+                0x00002104       0x44 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
  .text.LCD_IsReady
-                0x0000214c       0xe4 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
-                0x0000214c                LCD_IsReady
+                0x00002148       0xe4 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
+                0x00002148                LCD_IsReady
  .text.LCD_WriteData
-                0x00002230       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
-                0x00002230                LCD_WriteData
+                0x0000222c       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
+                0x0000222c                LCD_WriteData
  .text.LCD_PrintString
-                0x00002248       0x1c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
-                0x00002248                LCD_PrintString
+                0x00002244       0x1c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
+                0x00002244                LCD_PrintString
  .text.LCD_PutChar
-                0x00002264        0x8 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
-                0x00002264                LCD_PutChar
+                0x00002260        0x8 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
+                0x00002260                LCD_PutChar
  .text.LCD_WriteControl
-                0x0000226c       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
-                0x0000226c                LCD_WriteControl
+                0x00002268       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
+                0x00002268                LCD_WriteControl
  .text.LCD_Init
-                0x00002284       0x6c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
-                0x00002284                LCD_Init
+                0x00002280       0x6c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
+                0x00002280                LCD_Init
  .text.LCD_Enable
-                0x000022f0       0x14 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
-                0x000022f0                LCD_Enable
+                0x000022ec       0x14 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
+                0x000022ec                LCD_Enable
  .text.LCD_Start
-                0x00002304       0x1c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
-                0x00002304                LCD_Start
+                0x00002300       0x1c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
+                0x00002300                LCD_Start
  .text.LCD_Position
-                0x00002320       0x3c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
-                0x00002320                LCD_Position
+                0x0000231c       0x3c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
+                0x0000231c                LCD_Position
  .text.KB_KeyboardCol1_Write
-                0x0000235c       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardCol1.o)
-                0x0000235c                KB_KeyboardCol1_Write
+                0x00002358       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardCol1.o)
+                0x00002358                KB_KeyboardCol1_Write
  .text.KB_KeyboardCol3_Write
-                0x00002374       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardCol3.o)
-                0x00002374                KB_KeyboardCol3_Write
+                0x00002370       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardCol3.o)
+                0x00002370                KB_KeyboardCol3_Write
  .text.KB_KeyboardCol2_Write
-                0x0000238c       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardCol2.o)
-                0x0000238c                KB_KeyboardCol2_Write
- .text.CyDelay  0x000023a4       0x2c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyLib.o)
-                0x000023a4                CyDelay
+                0x00002388       0x18 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardCol2.o)
+                0x00002388                KB_KeyboardCol2_Write
+ .text.CyDelay  0x000023a0       0x2c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyLib.o)
+                0x000023a0                CyDelay
  .text.CyDelayUs
-                0x000023d0       0x14 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyLib.o)
-                0x000023d0                CyDelayUs
- *fill*         0x000023e4        0x4 
- .text          0x000023e8       0x20 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyBootAsmGnu.o)
-                0x000023e8                CyDelayCycles
-                0x000023f8                CyEnterCriticalSection
-                0x00002400                CyExitCriticalSection
- .text.__errno  0x00002408        0xc c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-errno.o)
-                0x00002408                __errno
+                0x000023cc       0x14 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyLib.o)
+                0x000023cc                CyDelayUs
+ .text          0x000023e0       0x20 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyBootAsmGnu.o)
+                0x000023e0                CyDelayCycles
+                0x000023f0                CyEnterCriticalSection
+                0x000023f8                CyExitCriticalSection
+ .text.__errno  0x00002400        0xc c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-errno.o)
+                0x00002400                __errno
  .text.__libc_init_array
-                0x00002414       0x4c c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-init.o)
-                0x00002414                __libc_init_array
- .text.memcpy   0x00002460       0x16 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-memcpy-stub.o)
-                0x00002460                memcpy
- .text.memset   0x00002476       0x10 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-memset.o)
-                0x00002476                memset
- *fill*         0x00002486        0x2 
- .text.rand     0x00002488       0x74 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-rand.o)
-                0x00002488                rand
- .text.malloc   0x000024fc       0x10 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-malloc.o)
-                0x000024fc                malloc
+                0x0000240c       0x4c c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-init.o)
+                0x0000240c                __libc_init_array
+ .text.memcpy   0x00002458       0x16 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-memcpy-stub.o)
+                0x00002458                memcpy
+ .text.memset   0x0000246e       0x10 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-memset.o)
+                0x0000246e                memset
+ *fill*         0x0000247e        0x2 
+ .text.rand     0x00002480       0x74 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-rand.o)
+                0x00002480                rand
+ .text.malloc   0x000024f4       0x10 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-malloc.o)
+                0x000024f4                malloc
  .text._malloc_r
-                0x0000250c       0xbc c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-nano-mallocr.o)
-                0x0000250c                _malloc_r
- .text._sbrk_r  0x000025c8       0x20 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-sbrkr.o)
-                0x000025c8                _sbrk_r
+                0x00002504       0xbc c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-nano-mallocr.o)
+                0x00002504                _malloc_r
+ .text._sbrk_r  0x000025c0       0x20 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-sbrkr.o)
+                0x000025c0                _sbrk_r
  .text.__malloc_lock
-                0x000025e8        0x2 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-mlock.o)
-                0x000025e8                __malloc_lock
+                0x000025e0        0x2 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-mlock.o)
+                0x000025e0                __malloc_lock
  .text.__malloc_unlock
-                0x000025ea        0x2 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-mlock.o)
-                0x000025ea                __malloc_unlock
+                0x000025e2        0x2 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-mlock.o)
+                0x000025e2                __malloc_unlock
  *(.plt)
  *(.gnu.warning)
  *(.glue_7t)
- .glue_7t       0x000025ec        0x0 linker stubs
+ .glue_7t       0x000025e4        0x0 linker stubs
  *(.glue_7)
- .glue_7        0x000025ec        0x0 linker stubs
+ .glue_7        0x000025e4        0x0 linker stubs
  *(.vfp11_veneer)
- .vfp11_veneer  0x000025ec        0x0 linker stubs
+ .vfp11_veneer  0x000025e4        0x0 linker stubs
  *(.bootloader)
  *(.ARM.extab* .gnu.linkonce.armextab.*)
  *(.gcc_except_table)
 
-.v4_bx          0x000025ec        0x0
- .v4_bx         0x000025ec        0x0 linker stubs
+.v4_bx          0x000025e4        0x0
+ .v4_bx         0x000025e4        0x0 linker stubs
 
-.iplt           0x000025ec        0x0
- .iplt          0x000025ec        0x0 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crtbegin.o
+.iplt           0x000025e4        0x0
+ .iplt          0x000025e4        0x0 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crtbegin.o
 
 .eh_frame_hdr
  *(.eh_frame_hdr)
 
-.eh_frame       0x000025ec        0x4
+.eh_frame       0x000025e4        0x4
  *(.eh_frame)
- .eh_frame      0x000025ec        0x0 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crtbegin.o
- .eh_frame      0x000025ec        0x4 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crtend.o
+ .eh_frame      0x000025e4        0x0 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crtbegin.o
+ .eh_frame      0x000025e4        0x4 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crtend.o
                 [!provide]                PROVIDE (__exidx_start, .)
 
 .ARM.exidx
  *(.ARM.exidx* .gnu.linkonce.armexidx.*)
-                0x000025f0                __exidx_end = .
+                0x000025e8                __exidx_end = .
 
-.rodata         0x000025f0       0xf0
+.rodata         0x000025e8       0xf0
  *(.rodata .rodata.* .gnu.linkonce.r.*)
  .rodata.str1.4
-                0x000025f0        0x5 .\CortexM3\ARM_GCC_541\Debug\tasks.o
- *fill*         0x000025f5        0x3 
+                0x000025e8        0x5 .\CortexM3\ARM_GCC_541\Debug\tasks.o
+ *fill*         0x000025ed        0x3 
  .rodata.str1.4
-                0x000025f8       0x10 .\CortexM3\ARM_GCC_541\Debug\timers.o
+                0x000025f0       0x10 .\CortexM3\ARM_GCC_541\Debug\timers.o
  .rodata.str1.4
-                0x00002608       0x4e .\CortexM3\ARM_GCC_541\Debug\main.o
- *fill*         0x00002656        0x2 
+                0x00002600       0x4e .\CortexM3\ARM_GCC_541\Debug\main.o
+ *fill*         0x0000264e        0x2 
  .rodata.str1.4
-                0x00002658       0x28 .\CortexM3\ARM_GCC_541\Debug\pandemic.o
+                0x00002650       0x28 .\CortexM3\ARM_GCC_541\Debug\pandemic.o
                                  0x25 (size before relaxing)
- .rodata        0x00002680       0x24 .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
+ .rodata        0x00002678       0x24 .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
  .rodata.str1.1
-                0x000026a4        0x2 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-impure.o)
-                0x000026a8                . = ALIGN (0x4)
- *fill*         0x000026a6        0x2 
+                0x0000269c        0x2 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-impure.o)
+                0x000026a0                . = ALIGN (0x4)
+ *fill*         0x0000269e        0x2 
  *(.init)
- .init          0x000026a8        0x4 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crti.o
-                0x000026a8                _init
- .init          0x000026ac        0x8 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crtn.o
-                0x000026b4                . = ALIGN (0x4)
-                0x000026b4                __preinit_array_start = .
+ .init          0x000026a0        0x4 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crti.o
+                0x000026a0                _init
+ .init          0x000026a4        0x8 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crtn.o
+                0x000026ac                . = ALIGN (0x4)
+                0x000026ac                __preinit_array_start = .
  *(.preinit_array)
-                0x000026b4                __preinit_array_end = .
-                0x000026b4                . = ALIGN (0x4)
-                0x000026b4                __init_array_start = .
+                0x000026ac                __preinit_array_end = .
+                0x000026ac                . = ALIGN (0x4)
+                0x000026ac                __init_array_start = .
  *(SORT(.init_array.*))
  *(.init_array)
- .init_array    0x000026b4        0x4 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crtbegin.o
- .init_array    0x000026b8        0x4 .\CortexM3\ARM_GCC_541\Debug\Cm3Start.o
-                0x000026bc                __init_array_end = .
-                0x000026bc                . = ALIGN (0x4)
+ .init_array    0x000026ac        0x4 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crtbegin.o
+ .init_array    0x000026b0        0x4 .\CortexM3\ARM_GCC_541\Debug\Cm3Start.o
+                0x000026b4                __init_array_end = .
+                0x000026b4                . = ALIGN (0x4)
  *(.fini)
- .fini          0x000026bc        0x4 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crti.o
-                0x000026bc                _fini
- .fini          0x000026c0        0x8 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crtn.o
-                0x000026c8                . = ALIGN (0x4)
-                0x000026c8                __fini_array_start = .
+ .fini          0x000026b4        0x4 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crti.o
+                0x000026b4                _fini
+ .fini          0x000026b8        0x8 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crtn.o
+                0x000026c0                . = ALIGN (0x4)
+                0x000026c0                __fini_array_start = .
  *(.fini_array)
- .fini_array    0x000026c8        0x4 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crtbegin.o
+ .fini_array    0x000026c0        0x4 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crtbegin.o
  *(SORT(.fini_array.*))
-                0x000026cc                __fini_array_end = .
-                0x000026cc                . = ALIGN (0x4)
+                0x000026c4                __fini_array_end = .
+                0x000026c4                . = ALIGN (0x4)
  *crtbegin.o(.ctors)
  *(EXCLUDE_FILE(*crtend.o) .ctors)
  *(SORT(.ctors.*))
  *crtend.o(.ctors)
-                0x000026cc                . = ALIGN (0x4)
+                0x000026c4                . = ALIGN (0x4)
  *crtbegin.o(.dtors)
  *(EXCLUDE_FILE(*crtend.o) .dtors)
  *(SORT(.dtors.*))
  *crtend.o(.dtors)
-                0x000026cc                . = ALIGN (0x4)
-                0x000026cc                __cy_regions = .
-                0x000026cc        0x4 LONG 0x26e0 __cy_region_init_ram
-                0x000026d0        0x4 LONG 0x1fff80c8 __cy_region_start_data
-                0x000026d4        0x4 LONG 0x90 __cy_region_init_size_ram
-                0x000026d8        0x4 LONG 0x8420 __cy_region_zero_size_ram
-                0x000026dc                __cy_regions_end = .
-                0x000026e0                . = ALIGN (0x8)
- *fill*         0x000026dc        0x4 
-                0x000026e0                _etext = .
+                0x000026c4                . = ALIGN (0x4)
+                0x000026c4                __cy_regions = .
+                0x000026c4        0x4 LONG 0x26d8 __cy_region_init_ram
+                0x000026c8        0x4 LONG 0x1fff80c8 __cy_region_start_data
+                0x000026cc        0x4 LONG 0x90 __cy_region_init_size_ram
+                0x000026d0        0x4 LONG 0x8418 __cy_region_zero_size_ram
+                0x000026d4                __cy_regions_end = .
+                0x000026d8                . = ALIGN (0x8)
+ *fill*         0x000026d4        0x4 
+                0x000026d8                _etext = .
 
 .cy_checksum_exclude
-                0x000026e0        0x0
+                0x000026d8        0x0
  *(.cy_checksum_exclude)
 
 .ramvectors     0x1fff8000       0xc0
@@ -1458,7 +1459,7 @@ END GROUP
  .noinit        0x1fff80c0        0x1 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyLib.o)
                 0x1fff80c0                CyResetStatus
 
-.data           0x1fff80c8       0x90 load address 0x000026e0
+.data           0x1fff80c8       0x90 load address 0x000026d8
                 0x1fff80c8                __cy_region_start_data = .
  *(.jcr)
  .jcr           0x1fff80c8        0x0 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crtbegin.o
@@ -1491,10 +1492,10 @@ END GROUP
  *(.ram)
                 0x1fff8158                _edata = .
 
-.igot.plt       0x1fff8158        0x0 load address 0x00002770
+.igot.plt       0x1fff8158        0x0 load address 0x00002768
  .igot.plt      0x1fff8158        0x0 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crtbegin.o
 
-.bss            0x1fff8158     0x8420 load address 0x00002770
+.bss            0x1fff8158     0x8418 load address 0x00002768
                 0x1fff8158                PROVIDE (__bss_start__, .)
  *(.shbss)
  *(.bss .bss.* .gnu.linkonce.b.*)
@@ -1503,56 +1504,52 @@ END GROUP
                 0x1fff8468                pxCurrentTCB
  .bss           0x1fff8494       0x3c .\CortexM3\ARM_GCC_541\Debug\timers.o
  .bss           0x1fff84d0     0x8014 .\CortexM3\ARM_GCC_541\Debug\heap_2.o
- .bss           0x200004e4        0x1 .\CortexM3\ARM_GCC_541\Debug\main.o
-                0x200004e4                md
- .bss           0x200004e5        0x2 .\CortexM3\ARM_GCC_541\Debug\pandemic.o
-                0x200004e5                medicineCntr
-                0x200004e6                vaccineCntr
- .bss           0x200004e7        0x2 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
-                0x200004e7                LCD_enableState
-                0x200004e8                LCD_initVar
- *fill*         0x200004e9        0x3 
+ .bss           0x200004e4        0x2 .\CortexM3\ARM_GCC_541\Debug\pandemic.o
+                0x200004e4                medicineCntr
+                0x200004e5                vaccineCntr
+ .bss           0x200004e6        0x2 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
+                0x200004e6                LCD_enableState
+                0x200004e7                LCD_initVar
  .bss.__malloc_sbrk_start
-                0x200004ec        0x4 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-nano-mallocr.o)
-                0x200004ec                __malloc_sbrk_start
+                0x200004e8        0x4 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-nano-mallocr.o)
+                0x200004e8                __malloc_sbrk_start
  .bss.__malloc_free_list
-                0x200004f0        0x4 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-nano-mallocr.o)
-                0x200004f0                __malloc_free_list
+                0x200004ec        0x4 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-nano-mallocr.o)
+                0x200004ec                __malloc_free_list
  *(COMMON)
- COMMON         0x200004f4       0x50 .\CortexM3\ARM_GCC_541\Debug\queue.o
-                0x200004f4                xQueueRegistry
- COMMON         0x20000544       0x20 .\CortexM3\ARM_GCC_541\Debug\main.o
-                0x20000544                vaccineHandler
-                0x20000548                quarantineHandler
-                0x2000054c                s1
-                0x20000550                medicineHandler
-                0x20000554                s2
-                0x20000558                screenUpdateHandler
-                0x2000055c                q
-                0x20000560                gameHandler
- COMMON         0x20000564        0xc .\CortexM3\ARM_GCC_541\Debug\pandemic.o
-                0x20000564                clue
-                0x20000565                missionCpy
-                0x20000568                quarantineMutex
-                0x2000056c                contaminationHandler
- COMMON         0x20000570        0x4 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-reent.o)
-                0x20000570                errno
-                0x20000578                . = ALIGN (0x8)
- *fill*         0x20000574        0x4 
+ COMMON         0x200004f0       0x50 .\CortexM3\ARM_GCC_541\Debug\queue.o
+                0x200004f0                xQueueRegistry
+ COMMON         0x20000540       0x20 .\CortexM3\ARM_GCC_541\Debug\main.o
+                0x20000540                vaccineHandler
+                0x20000544                quarantineHandler
+                0x20000548                s1
+                0x2000054c                medicineHandler
+                0x20000550                s2
+                0x20000554                screenUpdateHandler
+                0x20000558                q
+                0x2000055c                gameHandler
+ COMMON         0x20000560        0xc .\CortexM3\ARM_GCC_541\Debug\pandemic.o
+                0x20000560                clue
+                0x20000561                missionCpy
+                0x20000564                quarantineMutex
+                0x20000568                contaminationHandler
+ COMMON         0x2000056c        0x4 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/../../../../arm-none-eabi/lib/armv7-m\libg_nano.a(lib_a-reent.o)
+                0x2000056c                errno
+                0x20000570                . = ALIGN (0x8)
  *(.ram.b)
-                0x20000578                _end = .
-                0x20000578                __end = .
-                0x20000578                PROVIDE (end, .)
-                0x20000578                PROVIDE (__bss_end__, .)
-                0x000026e0                __cy_region_init_ram = LOADADDR (.data)
+                0x20000570                _end = .
+                0x20000570                __end = .
+                0x20000570                PROVIDE (end, .)
+                0x20000570                PROVIDE (__bss_end__, .)
+                0x000026d8                __cy_region_init_ram = LOADADDR (.data)
                 0x00000090                __cy_region_init_size_ram = (_edata - ADDR (.data))
-                0x00008420                __cy_region_zero_size_ram = (_end - _edata)
+                0x00008418                __cy_region_zero_size_ram = (_end - _edata)
 
-.heap           0x20000578       0x80 load address 0x00002770
-                0x20000578                . = _end
-                0x200005f8                . = (. + 0x80)
- *fill*         0x20000578       0x80 
-                0x200005f8                __cy_heap_limit = .
+.heap           0x20000570       0x80 load address 0x00002768
+                0x20000570                . = _end
+                0x200005f0                . = (. + 0x80)
+ *fill*         0x20000570       0x80 
+                0x200005f0                __cy_heap_limit = .
 
 .stack          0x20007800      0x800
                 0x20007800                __cy_stack_limit = .
@@ -1599,8 +1596,8 @@ END GROUP
  .cymeta        0x90500000        0xc .\CortexM3\ARM_GCC_541\Debug\cymetadata.o
                 0x90500000                cy_metadata
 
-.rel.dyn        0x00002770        0x0 load address 0x9050000c
- .rel.iplt      0x00002770        0x0 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crtbegin.o
+.rel.dyn        0x00002768        0x0 load address 0x9050000c
+ .rel.iplt      0x00002768        0x0 c:/program files (x86)/cypress/psoc creator/4.3/psoc creator/import/gnu/arm/5.4.1/bin/../lib/gcc/arm-none-eabi/5.4.1/armv7-m/crtbegin.o
 
 .stab
  *(.stab)
@@ -1692,7 +1689,7 @@ END GROUP
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0xf894
+.debug_info     0x00000000     0xf8a8
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000       0x79 .\CortexM3\ARM_GCC_541\Debug\croutine.o
  .debug_info    0x00000079      0x8f1 .\CortexM3\ARM_GCC_541\Debug\event_groups.o
@@ -1704,29 +1701,29 @@ END GROUP
  .debug_info    0x00006ccd     0x206f .\CortexM3\ARM_GCC_541\Debug\tasks.o
  .debug_info    0x00008d3c      0xe72 .\CortexM3\ARM_GCC_541\Debug\timers.o
  .debug_info    0x00009bae      0x32e .\CortexM3\ARM_GCC_541\Debug\heap_2.o
- .debug_info    0x00009edc      0x8e7 .\CortexM3\ARM_GCC_541\Debug\main.o
- .debug_info    0x0000a7c3      0x6a2 .\CortexM3\ARM_GCC_541\Debug\pandemic.o
- .debug_info    0x0000ae65      0x465 .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
- .debug_info    0x0000b2ca      0x134 .\CortexM3\ARM_GCC_541\Debug\cymetadata.o
- .debug_info    0x0000b3fe      0x3bb .\CortexM3\ARM_GCC_541\Debug\Cm3Start.o
- .debug_info    0x0000b7b9      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED1.o)
- .debug_info    0x0000b8d8      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED2.o)
- .debug_info    0x0000b9f7      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED3.o)
- .debug_info    0x0000bb16      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED4.o)
- .debug_info    0x0000bc35      0x36a .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_keyboard.o)
- .debug_info    0x0000bf9f      0x715 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
- .debug_info    0x0000c6b4      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardCol1.o)
- .debug_info    0x0000c7d3      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardCol3.o)
- .debug_info    0x0000c8f2      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardCol2.o)
- .debug_info    0x0000ca11      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardRow0.o)
- .debug_info    0x0000cb30      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardRow1.o)
- .debug_info    0x0000cc4f      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardRow2.o)
- .debug_info    0x0000cd6e      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardRow3.o)
- .debug_info    0x0000ce8d     0x1374 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyLib.o)
- .debug_info    0x0000e201      0xa2a .\CortexM3\ARM_GCC_541\Debug\pandemic.a(cyPm.o)
- .debug_info    0x0000ec2b       0xcc .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyBootAsmGnu.o)
- .debug_info    0x0000ecf7      0x64d .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyFlash.o)
- .debug_info    0x0000f344      0x550 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CySpc.o)
+ .debug_info    0x00009edc      0x8fb .\CortexM3\ARM_GCC_541\Debug\main.o
+ .debug_info    0x0000a7d7      0x6a2 .\CortexM3\ARM_GCC_541\Debug\pandemic.o
+ .debug_info    0x0000ae79      0x465 .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
+ .debug_info    0x0000b2de      0x134 .\CortexM3\ARM_GCC_541\Debug\cymetadata.o
+ .debug_info    0x0000b412      0x3bb .\CortexM3\ARM_GCC_541\Debug\Cm3Start.o
+ .debug_info    0x0000b7cd      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED1.o)
+ .debug_info    0x0000b8ec      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED2.o)
+ .debug_info    0x0000ba0b      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED3.o)
+ .debug_info    0x0000bb2a      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED4.o)
+ .debug_info    0x0000bc49      0x36a .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_keyboard.o)
+ .debug_info    0x0000bfb3      0x715 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
+ .debug_info    0x0000c6c8      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardCol1.o)
+ .debug_info    0x0000c7e7      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardCol3.o)
+ .debug_info    0x0000c906      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardCol2.o)
+ .debug_info    0x0000ca25      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardRow0.o)
+ .debug_info    0x0000cb44      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardRow1.o)
+ .debug_info    0x0000cc63      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardRow2.o)
+ .debug_info    0x0000cd82      0x11f .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardRow3.o)
+ .debug_info    0x0000cea1     0x1374 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyLib.o)
+ .debug_info    0x0000e215      0xa2a .\CortexM3\ARM_GCC_541\Debug\pandemic.a(cyPm.o)
+ .debug_info    0x0000ec3f       0xcc .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyBootAsmGnu.o)
+ .debug_info    0x0000ed0b      0x64d .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyFlash.o)
+ .debug_info    0x0000f358      0x550 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CySpc.o)
 
 .debug_abbrev   0x00000000     0x29db
  *(.debug_abbrev)
@@ -1764,7 +1761,7 @@ END GROUP
  .debug_abbrev  0x000026a0      0x1a7 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyFlash.o)
  .debug_abbrev  0x00002847      0x194 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CySpc.o)
 
-.debug_line     0x00000000     0x52dd
+.debug_line     0x00000000     0x52d8
  *(.debug_line)
  .debug_line    0x00000000       0x1d .\CortexM3\ARM_GCC_541\Debug\croutine.o
  .debug_line    0x0000001d      0x2f5 .\CortexM3\ARM_GCC_541\Debug\event_groups.o
@@ -1776,29 +1773,29 @@ END GROUP
  .debug_line    0x00001b05      0xa9f .\CortexM3\ARM_GCC_541\Debug\tasks.o
  .debug_line    0x000025a4      0x3b8 .\CortexM3\ARM_GCC_541\Debug\timers.o
  .debug_line    0x0000295c      0x28a .\CortexM3\ARM_GCC_541\Debug\heap_2.o
- .debug_line    0x00002be6      0x340 .\CortexM3\ARM_GCC_541\Debug\main.o
- .debug_line    0x00002f26      0x397 .\CortexM3\ARM_GCC_541\Debug\pandemic.o
- .debug_line    0x000032bd      0x1aa .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
- .debug_line    0x00003467      0x141 .\CortexM3\ARM_GCC_541\Debug\cymetadata.o
- .debug_line    0x000035a8      0x234 .\CortexM3\ARM_GCC_541\Debug\Cm3Start.o
- .debug_line    0x000037dc       0x91 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED1.o)
- .debug_line    0x0000386d       0x91 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED2.o)
- .debug_line    0x000038fe       0x91 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED3.o)
- .debug_line    0x0000398f       0x91 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED4.o)
- .debug_line    0x00003a20      0x240 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_keyboard.o)
- .debug_line    0x00003c60      0x1dc .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
- .debug_line    0x00003e3c       0x9c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardCol1.o)
- .debug_line    0x00003ed8       0x9c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardCol3.o)
- .debug_line    0x00003f74       0x9c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardCol2.o)
- .debug_line    0x00004010       0x9c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardRow0.o)
- .debug_line    0x000040ac       0x9c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardRow1.o)
- .debug_line    0x00004148       0x9c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardRow2.o)
- .debug_line    0x000041e4       0x9c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardRow3.o)
- .debug_line    0x00004280      0x816 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyLib.o)
- .debug_line    0x00004a96      0x367 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(cyPm.o)
- .debug_line    0x00004dfd       0x66 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyBootAsmGnu.o)
- .debug_line    0x00004e63      0x21a .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyFlash.o)
- .debug_line    0x0000507d      0x260 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CySpc.o)
+ .debug_line    0x00002be6      0x33b .\CortexM3\ARM_GCC_541\Debug\main.o
+ .debug_line    0x00002f21      0x397 .\CortexM3\ARM_GCC_541\Debug\pandemic.o
+ .debug_line    0x000032b8      0x1aa .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
+ .debug_line    0x00003462      0x141 .\CortexM3\ARM_GCC_541\Debug\cymetadata.o
+ .debug_line    0x000035a3      0x234 .\CortexM3\ARM_GCC_541\Debug\Cm3Start.o
+ .debug_line    0x000037d7       0x91 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED1.o)
+ .debug_line    0x00003868       0x91 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED2.o)
+ .debug_line    0x000038f9       0x91 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED3.o)
+ .debug_line    0x0000398a       0x91 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LED4.o)
+ .debug_line    0x00003a1b      0x240 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_keyboard.o)
+ .debug_line    0x00003c5b      0x1dc .\CortexM3\ARM_GCC_541\Debug\pandemic.a(LCD.o)
+ .debug_line    0x00003e37       0x9c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardCol1.o)
+ .debug_line    0x00003ed3       0x9c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardCol3.o)
+ .debug_line    0x00003f6f       0x9c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardCol2.o)
+ .debug_line    0x0000400b       0x9c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardRow0.o)
+ .debug_line    0x000040a7       0x9c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardRow1.o)
+ .debug_line    0x00004143       0x9c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardRow2.o)
+ .debug_line    0x000041df       0x9c .\CortexM3\ARM_GCC_541\Debug\pandemic.a(KB_KeyboardRow3.o)
+ .debug_line    0x0000427b      0x816 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyLib.o)
+ .debug_line    0x00004a91      0x367 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(cyPm.o)
+ .debug_line    0x00004df8       0x66 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyBootAsmGnu.o)
+ .debug_line    0x00004e5e      0x21a .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CyFlash.o)
+ .debug_line    0x00005078      0x260 .\CortexM3\ARM_GCC_541\Debug\pandemic.a(CySpc.o)
 
 .debug_frame    0x00000000     0x343c
  *(.debug_frame)
@@ -1867,9 +1864,9 @@ END GROUP
                                 0x89e (size before relaxing)
  .debug_str     0x000022b3       0xff .\CortexM3\ARM_GCC_541\Debug\heap_2.o
                                 0x367 (size before relaxing)
- .debug_str     0x000023b2      0x288 .\CortexM3\ARM_GCC_541\Debug\main.o
-                                0x506 (size before relaxing)
- .debug_str     0x0000263a      0x18b .\CortexM3\ARM_GCC_541\Debug\pandemic.o
+ .debug_str     0x000023b2      0x298 .\CortexM3\ARM_GCC_541\Debug\main.o
+                                0x516 (size before relaxing)
+ .debug_str     0x0000264a      0x17b .\CortexM3\ARM_GCC_541\Debug\pandemic.o
                                 0x515 (size before relaxing)
  .debug_str     0x000027c5      0x107 .\CortexM3\ARM_GCC_541\Debug\cyfitter_cfg.o
                                 0x2f4 (size before relaxing)
