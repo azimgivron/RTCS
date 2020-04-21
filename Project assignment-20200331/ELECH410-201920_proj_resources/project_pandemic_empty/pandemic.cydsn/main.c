@@ -31,8 +31,8 @@
 #define GAME_PRIORITY (20)
 #define QUARANTINE_PRIORITY (18)
 #define SCREEN_UPDATE_PRIORITY (16)
-#define MEDICINE_PRIORITY (14)
-#define VACCINE_PRIORITY (12)
+#define MEDICINE_PRIORITY (12)
+#define VACCINE_PRIORITY (14)
 
 /* Task period */
 #define MEDICINE_TASK_PERIOD (5000)   
@@ -48,8 +48,6 @@ QueueHandle_t q;
 TaskHandle_t gameHandler, quarantineHandler, vaccineHandler,
 screenUpdateHandler, medicineHandler;
 
-TimerHandle_t medecineTimerHandler;
-
 /*
  * Installs the RTOS interrupt handlers.
  */
@@ -62,7 +60,6 @@ void screenUpdateTask();
 void medicineTask();
 void printCounter(char* numberAsChar, uint8_t lowerBound, uint8_t charNbr);
 void convertPercentage(uint8_t number, char* numberAsChar);
-void medicineTimerCallback();
 
 
 uint8_t md=0;
@@ -84,8 +81,6 @@ int main(void)
     xTaskCreate( vaccineTask, VACCINE_TASK_NAME, TASK_STACK_SIZE, NULL, VACCINE_PRIORITY, &vaccineHandler );
     xTaskCreate( screenUpdateTask, SCREEN_UPDATE_TASK_NAME, TASK_STACK_SIZE, NULL, SCREEN_UPDATE_PRIORITY, &screenUpdateHandler );
     xTaskCreate( medicineTask, MEDICINE_TASK_NAME, TASK_STACK_SIZE, NULL, MEDICINE_PRIORITY, &medicineHandler );
-    
-    medecineTimerHandler = xTimerCreate(MEDICINE_TIMER_NAME, MEDICINE_TASK_PERIOD, pdTRUE, NULL, medicineTimerCallback);
     
     s1 = xSemaphoreCreateBinary();
     s2 = xSemaphoreCreateMutex();
@@ -238,24 +233,14 @@ void convertPercentage(uint8_t number, char* numberAsChar)
 void medicineTask()
 {
     Token medicine;
-    uint8_t i;
     for(;;)
     {
-        for(i=0; i<2; i++)
-        {
-            xSemaphoreTake(s2, portMAX_DELAY);
-            medicine = assignMissionToLab(0);
-            xSemaphoreGive(s2);
-            shipVaccine(medicine);
-            md++;
-        }
-        vTaskSuspend(medicineHandler);
+        xSemaphoreTake(s2, portMAX_DELAY);
+        medicine = assignMissionToLab(0);
+        xSemaphoreGive(s2);
+        shipMedicine(medicine);
+        md++;
     }
-}
-
-void medicineTimerCallback()
-{
-    vTaskResume(medicineHandler);
 }
 
 
