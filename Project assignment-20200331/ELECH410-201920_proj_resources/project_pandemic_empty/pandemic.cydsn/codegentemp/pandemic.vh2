@@ -2,7 +2,7 @@
 --	Conversion of pandemic.v to vh2:
 --
 --	Cypress Semiconductor - WARP Version 6.3 IR 41
---	Tue Mar 31 03:35:05 2020
+--	Mon Apr 20 23:56:24 2020
 --
 
 USE cypress.cypress.all;

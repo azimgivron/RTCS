@@ -28,10 +28,10 @@
 #define MEDICINE_TASK_NAME ("medicine_task")
 
 #define GAME_PRIORITY (20)
-#define QUARANTINE_PRIORITY (3)
-#define VACCINE_PRIORITY (2)
-#define SCREEN_UPDATE_PRIORITY (1)
-#define MEDICINE_PRIORITY (0)
+#define QUARANTINE_PRIORITY (13)
+#define VACCINE_PRIORITY (12)
+#define SCREEN_UPDATE_PRIORITY (11)
+#define MEDICINE_PRIORITY (10)
 
 
 /* Semaphore */
@@ -134,7 +134,6 @@ void vaccineTask(){
     for(;;)
     {
         xQueueReceive(q, (void*)&clue, portMAX_DELAY);
-        
         xSemaphoreTake(s2, portMAX_DELAY);
         vaccine = assignMissionToLab(clue);
         shipVaccine(vaccine); 
@@ -142,14 +141,58 @@ void vaccineTask(){
     }
 }
 
+void printCounter(char* numberAsChar, uint8_t lowerBound, uint8_t upperBound)
+{
+    uint8_t i, diff=upperBound-lowerBound, startAtZero=(diff==2)?0:1;
+    for(i=0 ; i<diff+1; i++)
+    {
+        LCD_Position(0u, lowerBound+i);
+        LCD_PutChar(numberAsChar[i+startAtZero]);
+    }
+}
+
+void convertPercentage(uint8_t number, char* numberAsChar)
+{
+    numberAsChar[0] = number/100+'0'; //hundreds
+    numberAsChar[1] = (number%100)/10+'0'; //dozens
+    numberAsChar[2] = number%10+'0'; //unit
+}
+
 /*
  * 
  * 
  */
 void screenUpdateTask(){
+    char numberAsChar[3];
+    uint8_t upperBound, lowerBound, cntr;
     for(;;)
     {
-        LCD_Position(0u, 0u);
+        //init.
+        lowerBound=0;
+        
+        cntr = getPopulationCntr();
+        convertPercentage(cntr, numberAsChar); //convert int to char
+        upperBound = (cntr==100)? 2u : 1u; //cntr on 3 or 2 char?
+        printCounter(numberAsChar, lowerBound, upperBound); //print cntr
+       
+        //put space
+        upperBound++;
+        LCD_Position(0u, upperBound);
+        LCD_PutChar(' ');
+        
+        //print second cntr
+        upperBound++;
+        cntr = getVaccineCntr();
+        convertPercentage(cntr, numberAsChar);
+        lowerBound = upperBound;
+        upperBound += (cntr==100)? 2u : 1u;
+        printCounter(numberAsChar, lowerBound, upperBound);
+        
+        //put space
+        upperBound++;
+        LCD_Position(0u, upperBound);
+        LCD_PutChar(' ');
+        
         //LCD_PutChar(getPopulationCntr());
         vTaskDelay(200u);
     }
