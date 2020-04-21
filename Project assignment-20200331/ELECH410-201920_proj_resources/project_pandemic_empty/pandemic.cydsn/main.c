@@ -190,7 +190,9 @@ void putCntrOnLCD(uint8_t cntr, uint8_t* lowerBound)
     uint8_t charNbr;
     
     convertPercentage(cntr, numberAsChar);
-    charNbr = (cntr>=100)? 2u : 1u;
+    if(cntr>=100) charNbr=2u;
+    else if(cntr>=10) charNbr=1u;
+    else charNbr=0u;
     printCounter(numberAsChar, *lowerBound, charNbr);
     *lowerBound += charNbr+1;
 }
@@ -211,7 +213,7 @@ void putSpaceOnLCD(uint8_t lowerBound)
  */
 void printCounter(char* numberAsChar, uint8_t lowerBound, uint8_t charNbr)
 {
-    uint8_t i, startAtZero=(charNbr==2)?0:1;
+    uint8_t i, startAtZero=2-charNbr;
     for(i=0 ; i<charNbr+1; i++)
     {
         LCD_Position(0u, lowerBound+i);
