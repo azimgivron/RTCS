@@ -1,3 +1,7 @@
---------------- Rebuild Started: 04/21/2020 11:37:37 Project: main.c, Configuration: ARM GCC 5.4-2016-q2-update Debug ---------------
+--------------- Rebuild Started: 04/28/2020 02:34:46 Project: main.c, Configuration: ARM GCC 5.4-2016-q2-update Debug ---------------
 arm-none-eabi-gcc.exe -mcpu=cortex-m3 -mthumb -I.\FreeRTOS\include -I. -IGenerated_Source\PSoC5 -Wa,-alh=.\CortexM3\ARM_GCC_541\Debug/main.lst -g -D DEBUG -D CY_CORE_ID=0 -Wall -ffunction-sections -ffat-lto-objects -Og -c main.c -o .\CortexM3\ARM_GCC_541\Debug\main.o
---------------- Rebuild Succeeded: 04/21/2020 11:37:38 ---------------
+main.c: In function 'putCntrOnLCD':
+main.c:191:5: warning: value computed is not used [-Wunused-value]
+     *position++;
+     ^
+--------------- Rebuild Succeeded: 04/28/2020 02:34:51 ---------------

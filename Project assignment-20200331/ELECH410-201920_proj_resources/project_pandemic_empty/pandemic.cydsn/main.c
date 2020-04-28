@@ -188,7 +188,7 @@ void putCntrOnLCD(uint8_t cntr, uint8_t* position)
     printCounter(numberAsChar, *position, charNbr);
     *position += charNbr+1;
     putSpaceOnLCD(*position); //put space
-    *position++;
+    (*position)++;
 }
 
 /*
