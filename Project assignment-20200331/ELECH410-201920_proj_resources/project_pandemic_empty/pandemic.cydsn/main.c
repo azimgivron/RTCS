@@ -258,4 +258,4 @@ void medicineProducerTask()
     }
 }
 
-/* [] END OF FILE */
+/* END OF FILE */
