@@ -163,12 +163,9 @@ void screenUpdateTask()
     {
         position=0; //init.
         
+        //TO DO change the function into a MACRO if the overhead caused by function calls is too big(not the case here)
         putCntrOnLCD(getPopulationCntr(), &position); //print population cntr
-        position++;
-        
         putCntrOnLCD(getVaccineCntr(), &position);
-        position++;
-        
         putCntrOnLCD(getMedicineCntr(), &position);
         
         vTaskDelay(200u);
@@ -191,6 +188,7 @@ void putCntrOnLCD(uint8_t cntr, uint8_t* position)
     printCounter(numberAsChar, *position, charNbr);
     *position += charNbr+1;
     putSpaceOnLCD(*position); //put space
+    *position++;
 }
 
 /*
@@ -243,9 +241,10 @@ void medicineProducerTask()
             xSemaphoreTake(labMutex, portMAX_DELAY);
             medicine[i] = assignMissionToLab(0);
             xSemaphoreGive(labMutex);
-        }//ship the 5pills at a time
+        }
+        
         for(i=0; i<5; i++)
-        {
+        {//ship the 5pills at a time
             if(getVaccineCntr()>=100 || getPopulationCntr()==0)
             {//end game so terminate the tasks
                 vTaskDelete(vaccineProducerHandler);
