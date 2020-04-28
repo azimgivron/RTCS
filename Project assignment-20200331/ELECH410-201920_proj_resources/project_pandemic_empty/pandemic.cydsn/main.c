@@ -19,8 +19,6 @@
 #include "pandemic.h"
 
 #define TASK_STACK_SIZE (1024)
-#define true (1)
-#define false (0)
 
 /* Task definitions */
 #define GAME_TASK_NAME ("game_task")
@@ -160,21 +158,18 @@ void vaccineProducerTask()
 void screenUpdateTask()
 {
     
-    uint8_t charNbr, lowerBound, cntr;
+    uint8_t lowerBound;
     for(;;)
     {
         lowerBound=0; //init.
         
         putCntrOnLCD(getPopulationCntr(), &lowerBound); //print population cntr
-        putSpaceOnLCD(lowerBound); //put space
         lowerBound++;
         
         putCntrOnLCD(getVaccineCntr(), &lowerBound);
-        putSpaceOnLCD(lowerBound);
         lowerBound++;
         
         putCntrOnLCD(getMedicineCntr(), &lowerBound);
-        putSpaceOnLCD(lowerBound);
         
         vTaskDelay(200u);
     }
@@ -195,6 +190,7 @@ void putCntrOnLCD(uint8_t cntr, uint8_t* lowerBound)
     else charNbr=0u;
     printCounter(numberAsChar, *lowerBound, charNbr);
     *lowerBound += charNbr+1;
+    putSpaceOnLCD(*lowerBound); //put space
 }
 
 /*
@@ -248,7 +244,16 @@ void medicineProducerTask()
             medicine[i] = assignMissionToLab(0);
             xSemaphoreGive(labMutex);
         }//ship the 5pills at a time
-        for(i=0; i<5; i++)shipMedicine(medicine[i]);
+        for(i=0; i<5; i++)
+        {
+            shipMedicine(medicine[i]);
+            if(getVaccineCntr()>=100)
+            {//end game so terminate the tasks
+                vTaskDelete(medicineProducerHandler);
+                vTaskDelete(vaccineProducerHandler);
+                vTaskDelete(quarantineHandler);
+            }
+        }
     }
 }
 
