@@ -54,10 +54,10 @@ void screenUpdateTask();
 void medicineProducerTask();
 
 /* Other functions declarations */
-void printCounter(char* numberAsChar, uint8_t lowerBound, uint8_t charNbr);
+void printCounter(char* numberAsChar, uint8_t position, uint8_t charNbr);
 void convertPercentage(uint8_t number, char* numberAsChar);
-void putCntrOnLCD(uint8_t cntr, uint8_t* lowerBound);
-void putSpaceOnLCD(uint8_t lowerBound);
+void putCntrOnLCD(uint8_t cntr, uint8_t* position);
+void putSpaceOnLCD(uint8_t position);
 
 int main(void)
 {
@@ -107,7 +107,7 @@ void freeRTOSInit( void )
  * Notify the quarantine task thatthe contamination has been released
  * 
  */
-void releaseContamination( void )
+void releaseContamination()
 {
     xSemaphoreGive(contaminationSemaphore);
 }
@@ -158,28 +158,28 @@ void vaccineProducerTask()
 void screenUpdateTask()
 {
     
-    uint8_t lowerBound;
+    uint8_t position;
     for(;;)
     {
-        lowerBound=0; //init.
+        position=0; //init.
         
-        putCntrOnLCD(getPopulationCntr(), &lowerBound); //print population cntr
-        lowerBound++;
+        putCntrOnLCD(getPopulationCntr(), &position); //print population cntr
+        position++;
         
-        putCntrOnLCD(getVaccineCntr(), &lowerBound);
-        lowerBound++;
+        putCntrOnLCD(getVaccineCntr(), &position);
+        position++;
         
-        putCntrOnLCD(getMedicineCntr(), &lowerBound);
+        putCntrOnLCD(getMedicineCntr(), &position);
         
         vTaskDelay(200u);
     }
 }
 
 /*
- * Put counter chararcter on the LCD at position @lowerBound
+ * Put counter chararcter on the LCD at position @position
  * 
  */
-void putCntrOnLCD(uint8_t cntr, uint8_t* lowerBound)
+void putCntrOnLCD(uint8_t cntr, uint8_t* position)
 {   
     char numberAsChar[3];
     uint8_t charNbr;
@@ -188,32 +188,32 @@ void putCntrOnLCD(uint8_t cntr, uint8_t* lowerBound)
     if(cntr>=100) charNbr=2u;
     else if(cntr>=10) charNbr=1u;
     else charNbr=0u;
-    printCounter(numberAsChar, *lowerBound, charNbr);
-    *lowerBound += charNbr+1;
-    putSpaceOnLCD(*lowerBound); //put space
+    printCounter(numberAsChar, *position, charNbr);
+    *position += charNbr+1;
+    putSpaceOnLCD(*position); //put space
 }
 
 /*
- * Put space chararcter on the LCD at position @lowerBound
+ * Put space chararcter on the LCD at position @position
  * 
  */
-void putSpaceOnLCD(uint8_t lowerBound)
+void putSpaceOnLCD(uint8_t position)
 {
-    LCD_Position(0u, lowerBound);
+    LCD_Position(0u, position);
     LCD_PutChar(' ');
 }
 
 /*
- * Put the chararcter in @numberAsChar on the LCD at position @lowerBound
+ * Put the chararcter in @numberAsChar on the LCD at position @position
  * 
  */
-void printCounter(char* numberAsChar, uint8_t lowerBound, uint8_t charNbr)
+void printCounter(char* numberAsChar, uint8_t position, uint8_t charNbr)
 {
-    uint8_t i, startAtZero=2-charNbr;
+    uint8_t i, start=2-charNbr;
     for(i=0 ; i<charNbr+1; i++)
     {
-        LCD_Position(0u, lowerBound+i);
-        LCD_PutChar(numberAsChar[i+startAtZero]);
+        LCD_Position(0u, position+i);
+        LCD_PutChar(numberAsChar[start+i]);
     }
 }
 
@@ -246,14 +246,15 @@ void medicineProducerTask()
         }//ship the 5pills at a time
         for(i=0; i<5; i++)
         {
-            shipMedicine(medicine[i]);
-            if(getVaccineCntr()>=100)
+            if(getVaccineCntr()>=100 || getPopulationCntr()==0)
             {//end game so terminate the tasks
                 vTaskDelete(vaccineProducerHandler);
                 vTaskDelete(quarantineHandler);
                 vTaskDelete(screenUpdateHandler);
+                vTaskDelete(gameHandler);
                 vTaskDelete(medicineProducerHandler);
             }
+            shipMedicine(medicine[i]);
         }
     }
 }
