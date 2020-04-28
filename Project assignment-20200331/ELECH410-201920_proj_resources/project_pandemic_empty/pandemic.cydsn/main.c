@@ -249,9 +249,10 @@ void medicineProducerTask()
             shipMedicine(medicine[i]);
             if(getVaccineCntr()>=100)
             {//end game so terminate the tasks
-                vTaskDelete(medicineProducerHandler);
                 vTaskDelete(vaccineProducerHandler);
                 vTaskDelete(quarantineHandler);
+                vTaskDelete(screenUpdateHandler);
+                vTaskDelete(medicineProducerHandler);
             }
         }
     }
